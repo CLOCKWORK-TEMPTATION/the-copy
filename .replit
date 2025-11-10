@@ -32,3 +32,12 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 33563
+externalPort = 3000
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd frontend && pnpm start"]
+build = ["bash", "-c", "cd frontend && pnpm build"]
