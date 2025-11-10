@@ -46,6 +46,11 @@
     },
     "onlyBuiltDependencies": [
       "@pnpm/exe"
+    ],
+    "ignoredBuiltDependencies": [
+      "@sentry/cli",
+      "esbuild",
+      "sharp"
     ]
   }
 }
