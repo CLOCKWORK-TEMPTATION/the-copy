@@ -43,6 +43,9 @@
       "@types/babel__traverse": "^7.20.5",
       "@types/eslint": "^8.56.10",
       "esbuild": "^0.25.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@pnpm/exe"
+    ]
   }
 }
