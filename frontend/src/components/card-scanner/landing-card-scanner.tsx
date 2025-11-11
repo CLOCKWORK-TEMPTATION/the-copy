@@ -2,37 +2,35 @@
 
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { useRouter } from "next/navigation"
-import pagesManifest from "@/config/pages.manifest.json"
-import images from "@/app/images"
-
-const codeChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789(){}[]<>;:,._-+=!@#$%^&*|\\/\"'`~?"
-
-// Generate features from manifest (excluding metrics-dashboard)
-const pagesArray = Array.isArray(pagesManifest.pages)
-  ? pagesManifest.pages.filter(page => page.slug !== "metrics-dashboard")
-  : [];
-
-const cardData = pagesArray.map((page, index) => ({
-  id: page.slug,
-  title: page.title,
-  description: (pagesManifest.metadata as Record<string, {title: string, description: string}>)[page.slug]?.description || "",
-  image: images[index] || "/placeholder.svg",
-  link: page.path,
-}));
+import { CARDS_11 } from "../carousel/cards.config"
+import images from "../../config/images"
 
 export function LandingCardScanner() {
-  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const particleCanvasRef = useRef<HTMLCanvasElement>(null)
   const scannerCanvasRef = useRef<HTMLCanvasElement>(null)
   const cardStreamRef = useRef<HTMLDivElement>(null)
   const cardLineRef = useRef<HTMLDivElement>(null)
 
+  // Map cards to their images
+  const cardImageMap: Record<string, number> = {
+    "directors-studio": 8,
+    "editor": 9,
+    "analysis": 1,
+    "arabic-creative-writing-studio": 2,
+    "actorai-arabic": 0,
+    "cinematography-studio": 6,
+    "breakdown": 5,
+    "development": 7,
+    "brainstorm": 4,
+    "metrics-dashboard": 10,
+    "arabic-prompt-engineering-studio": 3,
+  }
+
   useEffect(() => {
     if (!cardLineRef.current || !particleCanvasRef.current || !scannerCanvasRef.current) return
 
-    // CardStreamController with custom card data
+    // CardStreamController
     class CardStreamController {
       container: HTMLElement
       cardLine: HTMLElement
@@ -244,15 +242,15 @@ export function LandingCardScanner() {
         return { width, height, fontSize, lineHeight }
       }
 
-      createCardWrapper(cardInfo: typeof cardData[0], index: number): HTMLDivElement {
+      createCardWrapper(card: typeof CARDS_11[0], imageIndex: number): HTMLDivElement {
         const wrapper = document.createElement("div")
         wrapper.className = "card-wrapper"
-        wrapper.setAttribute("data-link", cardInfo.link)
+        wrapper.setAttribute("data-link", card.href)
         wrapper.style.cursor = "pointer"
 
         // Click handler for navigation
         wrapper.addEventListener("click", () => {
-          router.push(cardInfo.link)
+          window.location.href = card.href
         })
 
         const normalCard = document.createElement("div")
@@ -260,8 +258,8 @@ export function LandingCardScanner() {
 
         const cardImage = document.createElement("img")
         cardImage.className = "card-image"
-        cardImage.src = cardInfo.image
-        cardImage.alt = cardInfo.title
+        cardImage.src = images[imageIndex] || images[0]
+        cardImage.alt = card.title
 
         cardImage.onerror = () => {
           const canvas = document.createElement("canvas")
@@ -366,11 +364,13 @@ export function LandingCardScanner() {
 
       populateCardLine() {
         this.cardLine.innerHTML = ""
-        // Repeat cards 3 times for infinite scroll effect
-        const repeatCount = 3
+        // Repeat cards 6 times for smoother infinite scroll effect
+        const repeatCount = 6
         for (let repeat = 0; repeat < repeatCount; repeat++) {
-          cardData.forEach((card, index) => {
-            const cardWrapper = this.createCardWrapper(card, index)
+          CARDS_11.forEach((card) => {
+            const slug = card.href.replace("/", "")
+            const imageIndex = cardImageMap[slug] ?? 0
+            const cardWrapper = this.createCardWrapper(card, imageIndex)
             this.cardLine.appendChild(cardWrapper)
           })
         }
@@ -389,7 +389,7 @@ export function LandingCardScanner() {
       }
     }
 
-    // ParticleSystem (same as original)
+    // ParticleSystem
     class ParticleSystem {
       scene: THREE.Scene
       camera: THREE.OrthographicCamera
@@ -573,7 +573,7 @@ export function LandingCardScanner() {
       }
     }
 
-    // ParticleScanner (keeping original implementation)
+    // ParticleScanner
     class ParticleScanner {
       canvas: HTMLCanvasElement
       ctx: CanvasRenderingContext2D
@@ -792,7 +792,6 @@ export function LandingCardScanner() {
         const lineWidth = this.lightBarWidth;
         const glow1Alpha = this.scanningActive ? 1.0 : 0.8;
         const glow2Alpha = this.scanningActive ? 0.8 : 0.6;
-        const glow3Alpha = this.scanningActive ? 0.6 : 0.4;
 
         const coreGradient = this.ctx.createLinearGradient(
           this.lightBarX - lineWidth / 2,
@@ -850,26 +849,6 @@ export function LandingCardScanner() {
         (this.ctx as any).roundRect(this.lightBarX - lineWidth * 4, drawY, lineWidth * 8, currentHeight, glow2Radius);
         this.ctx.fill();
 
-        if (this.scanningActive) {
-          const glow3Gradient = this.ctx.createLinearGradient(
-            this.lightBarX - lineWidth * 8,
-            0,
-            this.lightBarX + lineWidth * 8,
-            0,
-          );
-          glow3Gradient.addColorStop(0, "rgba(135, 206, 250, 0)");
-          glow3Gradient.addColorStop(0.5, `rgba(135, 206, 250, 0.2)`);
-          glow3Gradient.addColorStop(1, "rgba(135, 206, 250, 0)");
-
-          this.ctx.globalAlpha = glow3Alpha;
-          this.ctx.fillStyle = glow3Gradient;
-
-          const glow3Radius = 45;
-          this.ctx.beginPath();
-          (this.ctx as any).roundRect(this.lightBarX - lineWidth * 8, drawY, lineWidth * 16, currentHeight, glow3Radius);
-          this.ctx.fill();
-        }
-
         this.ctx.globalCompositeOperation = "destination-in";
         this.ctx.globalAlpha = 1;
         this.ctx.fillStyle = verticalGradient;
@@ -902,10 +881,7 @@ export function LandingCardScanner() {
           }
         }
 
-        const currentIntensity = this.intensity
-        const currentMaxParticles = this.maxParticles
-
-        if (Math.random() < currentIntensity && this.count < currentMaxParticles) {
+        if (Math.random() < this.intensity && this.count < this.maxParticles) {
           const particle = this.createParticle()
           particle.originalAlpha = particle.alpha
           particle.startX = particle.x
@@ -913,18 +889,8 @@ export function LandingCardScanner() {
           this.particles[this.count] = particle
         }
 
-        const intensityRatio = this.intensity / this.baseIntensity
-
-        if (intensityRatio > 1.1 && Math.random() < (intensityRatio - 1.0) * 1.2) {
-          const particle = this.createParticle()
-          particle.originalAlpha = particle.alpha
-          particle.startX = particle.x
-          this.count++
-          this.particles[this.count] = particle
-        }
-
-        if (this.count > currentMaxParticles + 200) {
-          const excessCount = Math.min(15, this.count - currentMaxParticles)
+        if (this.count > this.maxParticles + 200) {
+          const excessCount = Math.min(15, this.count - this.maxParticles)
           for (let i = 0; i < excessCount; i++) {
             delete this.particles[this.count - i]
           }
@@ -965,11 +931,11 @@ export function LandingCardScanner() {
       particleSystem.destroy()
       particleScanner.destroy()
     }
-  }, [router])
+  }, [cardImageMap])
 
   return (
     <>
-      <style jsx global>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
 
         .card-scanner-container {

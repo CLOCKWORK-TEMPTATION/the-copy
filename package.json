@@ -4,7 +4,7 @@
   "packageManager": "pnpm@10.20.0",
   "scripts": {
     "start": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-app.ps1",
-    "stop": "bash ./scripts/kill-ports.sh",
+    "stop": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/kill-ports.ps1",
     "start:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./start-dev.ps1",
     "start:redis": "powershell -Command \"Start-Process -FilePath '.\\redis\\redis-server.exe' -WindowStyle Minimized\"",
     "kill:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./kill-dev.ps1",
