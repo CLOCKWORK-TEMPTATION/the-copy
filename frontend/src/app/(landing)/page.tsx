@@ -105,6 +105,20 @@ export default function LandingPage() {
         />
       </section>
 
+      {/* Cards Section with Title */}
+      <section className="relative bg-black py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl mb-4 text-white">
+              بس اصلي
+            </h2>
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
+              مجموعة متكاملة من الأدوات الإبداعية المدعومة بالذكاء الاصطناعي
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* قسم البطاقات مع تأثير الماسح */}
       <section
         ref={cardsContainerRef}
