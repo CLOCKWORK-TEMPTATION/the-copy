@@ -41,8 +41,7 @@ export const VideoTextMask = forwardRef<HTMLDivElement, VideoTextMaskProps>(
                 fontSize: "clamp(8rem, 28vw, 40rem)",
                 fontWeight: 900,
                 color: "black",
-                fontFamily:
-                  "'Tajawal', 'Cairo', 'Noto Kufi Arabic', 'system-ui', '-apple-system', 'Segoe UI', 'Arial Black', sans-serif",
+                fontFamily: "'Tajawal', 'Cairo', 'Noto Kufi Arabic', 'system-ui', '-apple-system', 'Segoe UI', 'Arial Black', sans-serif",
                 letterSpacing: "-0.08em",
                 fontStretch: "ultra-expanded",
               }}
@@ -52,8 +51,8 @@ export const VideoTextMask = forwardRef<HTMLDivElement, VideoTextMaskProps>(
           </div>
         </div>
 
-        {/* خلفية بيضاء احتياطية - مُعدّلة من bg-black إلى bg-white */}
-        <div className="absolute inset-0 -z-10 bg-white" />
+        {/* خلفية سوداء احتياطية */}
+        <div className="absolute inset-0 -z-10 bg-black" />
       </div>
     );
   }
