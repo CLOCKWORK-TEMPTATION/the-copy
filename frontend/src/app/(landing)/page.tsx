@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VideoTextMask } from "@/components/landing/video-text-mask";
-import { LandingHeader } from "@/components/landing/landing-header";
-import { SlidingCarousel } from "@/components/landing/carousel/sliding-carousel";
-import { CARDS_11 } from "@/components/landing/carousel/cards.config";
+import { LandingCardScanner } from "@/components/landing/landing-card-scanner";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -16,182 +13,114 @@ if (typeof window !== "undefined") {
 
 export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const textMaskRef = useRef<HTMLDivElement>(null);
+  const maskContentRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
-  const carouselSectionRef = useRef<HTMLElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Check for reduced motion preference
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    setIsMounted(true);
   }, []);
 
+  // التأثير الرئيسي: تثبيت قسم Hero مع الزوم والاختفاء
   useEffect(() => {
-    if (prefersReducedMotion || !textMaskRef.current || !headerRef.current) {
-      // If reduced motion is preferred, show header immediately
-      if (headerRef.current) {
-        gsap.set(headerRef.current, { opacity: 1, y: 0 });
+    if (!isMounted) return;
+
+    const ctx = gsap.context(() => {
+      const heroSection = heroRef.current;
+      const header = headerRef.current;
+      const textSection = cardsContainerRef.current;
+      const maskContent = maskContentRef.current;
+
+      if (!heroSection || !header || !textSection || !maskContent) {
+        console.error("عنصر واحد أو أكثر مفقود من الصفحة.");
+        return;
       }
-      return;
-    }
 
-    const textElement = textMaskRef.current;
-    const headerElement = headerRef.current;
+      // --- التحريك الرئيسي: تثبيت القسم الأول وتحريكه ---
+      // إنشاء خط زمني (Timeline) واحد ليتحكم في كل ما يحدث
+      const heroTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroSection,
+          start: "top top",
+          end: "+=100%", // يثبت القسم الأول لمدة تمرير 100% من ارتفاع الشاشة
+          scrub: true,
+          pin: true, // تثبيت القسم في مكانه
+        }
+      });
 
-    // Create GSAP timeline for the scroll animation
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.5,
-        onEnter: () => {
-          // Animate text and header on first scroll
-          const tl = gsap.timeline();
+      // حركة التكبير والصعود للأعلى مع الاختفاء للقسم الأول
+      heroTimeline.to(maskContent, {
+        scale: 1.5,
+        y: -200,
+        opacity: 0,
+        ease: "power2.in"
+      });
 
-          // Scale and fade out text (0.3s)
-          tl.to(textElement, {
-            scale: 1.1,
-            opacity: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          });
+      // حركة ظهور الهيدر في نفس الوقت
+      heroTimeline.to(header, {
+        opacity: 1,
+        ease: "power1.in"
+      }, "<"); // "<" تجعلها تحدث في نفس وقت الحركة السابقة
 
-          // Simultaneously bring down header (0.35s)
-          tl.to(
-            headerElement,
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.35,
-              ease: "power2.out",
-            },
-            "<" // Start at the same time as text animation
-          );
-        },
-      },
+      // --- التحريك المنفصل: ظهور قسم البطاقات ---
+      gsap.from(textSection, {
+        y: 150,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: textSection,
+          start: "top bottom",
+          end: "top 60%",
+          scrub: 1.5,
+        }
+      });
     });
 
-    return () => {
-      timeline.kill();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (
-      prefersReducedMotion ||
-      !carouselSectionRef.current ||
-      !headerRef.current
-    ) {
-      return;
-    }
-
-    // Carousel entrance animation
-    gsap.fromTo(
-      carouselSectionRef.current,
-      {
-        y: 60,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: carouselSectionRef.current,
-          start: "top 65%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-  }, [prefersReducedMotion]);
-
-  // Create carousel slides from cards config
-  const carouselSlides = CARDS_11.map((card) => ({
-    id: card.key,
-    content: (
-      <Link
-        href={card.href}
-        className="block h-full"
-        aria-label={`انتقل إلى ${card.title}`}
-      >
-        <div className="flex items-center justify-center h-[300px] sm:h-[400px] lg:h-[500px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-          <div className="text-center px-6">
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-              {card.title}
-            </h3>
-            <p className="mt-4 text-sm sm:text-base text-gray-600">
-              اضغط للدخول
-            </p>
-          </div>
-        </div>
-      </Link>
-    ),
-    title: card.title,
-  }));
+    return () => ctx.revert();
+  }, [isMounted]);
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Header - starts hidden and comes down on scroll */}
-      <LandingHeader ref={headerRef} />
+    <div className="relative min-h-screen bg-black" dir="rtl">
+      {/* الهيدر الثابت - مخفي في البداية */}
+      <header
+        ref={headerRef}
+        className="fixed top-0 left-0 right-0 z-50 bg-black text-white border-b border-white/10"
+        style={{ opacity: 0 }}
+      >
+        <div className="container mx-auto flex items-center justify-center px-6 py-4">
+          <h2 className="text-2xl">النسخة</h2>
+        </div>
+      </header>
 
-      {/* Hero Section - Video Text Mask */}
+      {/* قسم Hero مع تأثير قناع الفيديو */}
       <section
         ref={heroRef}
-        className="relative w-full h-screen bg-white overflow-hidden"
+        className="relative w-full h-screen overflow-hidden bg-white"
       >
         <VideoTextMask
-          ref={textMaskRef}
-          videoSrc="https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_30fps.mp4"
+          ref={maskContentRef}
+          videoSrc="https://cdn.pixabay.com/video/2025/11/09/314880.mp4"
           text="النسخة"
           className="w-full h-full"
         />
       </section>
 
-      {/* Carousel Section */}
+      {/* قسم البطاقات مع تأثير الماسح */}
       <section
-        ref={carouselSectionRef}
-        className="relative w-full py-16 sm:py-24 lg:py-32 bg-white"
+        ref={cardsContainerRef}
+        className="relative h-screen bg-black overflow-hidden"
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              استكشف أدواتنا
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
-              اختر الأداة المناسبة لمشروعك الإبداعي
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <SlidingCarousel
-              slides={carouselSlides}
-              autoPlay={!prefersReducedMotion}
-              autoPlayInterval={5000}
-              showControls={true}
-              showIndicators={true}
-              dragEnabled={true}
-              className="rounded-2xl overflow-hidden"
-            />
-          </div>
-        </div>
+        <LandingCardScanner />
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm sm:text-base">
-            &copy; {new Date().getFullYear()} النسخة - جميع الحقوق محفوظة
+      {/* الفوتر */}
+      <footer className="relative bg-black border-t border-white/10 px-4 py-8">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row">
+          <span className="text-2xl text-white">
+            النسخة
+          </span>
+          <p className="text-sm text-white/60">
+            &copy; {new Date().getFullYear()} النسخة. جميع الحقوق محفوظة.
           </p>
         </div>
       </footer>
