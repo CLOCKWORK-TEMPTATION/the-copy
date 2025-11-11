@@ -1,7 +1,8 @@
 الاجابة على اسئلتك ستجدها عندما تقوم بتحليل  الملفات الموجودة داخل هذا المجلد ... بن تصل الى كل الاجابات الابعد تحليلك الكامل لكل الملفات بكل انواعها الواردة في هذا المجلد 
 
 
-the answers in this folder
+[the answers in this folder](https://github.com/CLOCKWORK-TEMPTATION/the-copy/tree/main/the%20answers%20in%20this%20folder)
+
 
 
  و بناء على تحليلك و التوصل الى الاجابات ... ٌم بتنفيذ المطلوب 
