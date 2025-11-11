@@ -3,15 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { VideoTextMask } from "@/components/landing/video-text-mask";
-import { LandingCardScanner } from "@/components/landing/card-scanner/landing-card-scanner";
+import { VideoTextMask } from "./components/video-text-mask";
+import { LandingCardScanner } from "./components/card-scanner/landing-card-scanner";
 
 // Register GSAP plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function LandingPage() {
+export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
