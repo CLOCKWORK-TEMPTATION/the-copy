@@ -1,197 +1,142 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { VideoTextMask } from "@/components/landing/video-text-mask";
-import { LandingHeader } from "@/components/landing/landing-header";
-import { SlidingCarousel } from "@/components/landing/carousel/sliding-carousel";
-import { CARDS_11 } from "@/components/landing/carousel/cards.config";
+import { LandingCardScanner } from "@/components/landing/card-scanner/landing-card-scanner";
 
-// Register ScrollTrigger plugin
+// Register GSAP plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
-  const textMaskRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
-  const carouselSectionRef = useRef<HTMLElement>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const maskContentRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Check for reduced motion preference
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    setIsMounted(true);
   }, []);
 
+  // GSAP Scroll Animations
   useEffect(() => {
-    if (prefersReducedMotion || !textMaskRef.current || !headerRef.current) {
-      // If reduced motion is preferred, show header immediately
-      if (headerRef.current) {
-        gsap.set(headerRef.current, { opacity: 1, y: 0 });
+    if (!isMounted) return;
+
+    const ctx = gsap.context(() => {
+      const heroSection = heroRef.current;
+      const header = headerRef.current;
+      const cardsSection = cardsContainerRef.current;
+      const maskContent = maskContentRef.current;
+
+      if (!heroSection || !header || !cardsSection || !maskContent) {
+        console.error("عنصر واحد أو أكثر مفقود من الصفحة.");
+        return;
       }
-      return;
-    }
 
-    const textElement = textMaskRef.current;
-    const headerElement = headerRef.current;
-
-    // Create GSAP timeline for the scroll animation
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: heroRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 0.5,
-        onEnter: () => {
-          // Animate text and header on first scroll
-          const tl = gsap.timeline();
-
-          // Scale and fade out text (0.3s)
-          tl.to(textElement, {
-            scale: 1.1,
-            opacity: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-
-          // Simultaneously bring down header (0.35s)
-          tl.to(
-            headerElement,
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.35,
-              ease: "power2.out",
-            },
-            "<" // Start at the same time as text animation
-          );
+      // Hero Timeline: Pin section and animate
+      const heroTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroSection,
+          start: "top top",
+          end: "+=100%",
+          scrub: true,
+          pin: true,
         },
-      },
+      });
+
+      // Zoom and fade out effect for video + mask
+      heroTimeline.to(maskContent, {
+        scale: 1.5,
+        y: -200,
+        opacity: 0,
+        ease: "power2.in",
+      });
+
+      // Header fade in at the same time
+      heroTimeline.to(
+        header,
+        {
+          opacity: 1,
+          ease: "power1.in",
+        },
+        "<"
+      );
+
+      // Cards section slide in from bottom
+      gsap.from(cardsSection, {
+        y: 150,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: cardsSection,
+          start: "top bottom",
+          end: "top 60%",
+          scrub: 1.5,
+        },
+      });
     });
 
-    return () => {
-      timeline.kill();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (
-      prefersReducedMotion ||
-      !carouselSectionRef.current ||
-      !headerRef.current
-    ) {
-      return;
-    }
-
-    // Carousel entrance animation
-    gsap.fromTo(
-      carouselSectionRef.current,
-      {
-        y: 60,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: carouselSectionRef.current,
-          start: "top 65%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-  }, [prefersReducedMotion]);
-
-  // Create carousel slides from cards config
-  const carouselSlides = CARDS_11.map((card) => ({
-    id: card.key,
-    content: (
-      <Link
-        href={card.href}
-        className="block h-full"
-        aria-label={`انتقل إلى ${card.title}`}
-      >
-        <div className="flex items-center justify-center h-[300px] sm:h-[400px] lg:h-[500px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-          <div className="text-center px-6">
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-              {card.title}
-            </h3>
-            <p className="mt-4 text-sm sm:text-base text-gray-600">
-              اضغط للدخول
-            </p>
-          </div>
-        </div>
-      </Link>
-    ),
-    title: card.title,
-  }));
+    return () => ctx.revert();
+  }, [isMounted]);
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Header - starts hidden and comes down on scroll */}
-      <LandingHeader ref={headerRef} />
+    <div className="relative min-h-screen bg-black" dir="rtl">
+      {/* Fixed Header - Hidden Initially */}
+      <header
+        ref={headerRef}
+        className="fixed top-0 left-0 right-0 z-50 bg-black text-white border-b border-white/10"
+        style={{ opacity: 0 }}
+      >
+        <div className="container mx-auto flex items-center justify-center px-6 py-4">
+          <a href="#" aria-label="العودة للصفحة الرئيسية" className="cursor-pointer">
+            <h2 className="text-2xl">النسخة</h2>
+          </a>
+        </div>
+      </header>
 
-      {/* Hero Section - Video Text Mask */}
+      {/* Hero Section with Video Text Mask */}
       <section
         ref={heroRef}
-        className="relative w-full h-screen bg-white overflow-hidden"
+        className="relative w-full h-screen overflow-hidden bg-white"
       >
         <VideoTextMask
-          ref={textMaskRef}
-          videoSrc="https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_30fps.mp4"
+          ref={maskContentRef}
+          videoSrc="https://cdn.pixabay.com/video/2025/11/09/314880.mp4"
           text="النسخة"
           className="w-full h-full"
         />
       </section>
 
-      {/* Carousel Section */}
-      <section
-        ref={carouselSectionRef}
-        className="relative w-full py-16 sm:py-24 lg:py-32 bg-white"
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              استكشف أدواتنا
+      {/* Cards Section with Scanner Effect */}
+      <section className="relative bg-black py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl mb-4 text-white">
+              بس اصلي
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
-              اختر الأداة المناسبة لمشروعك الإبداعي
+            <p className="text-lg text-white/70 max-w-2xl mx-auto">
+              مجموعة متكاملة من الأدوات الإبداعية المدعومة بالذكاء الاصطناعي
             </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <SlidingCarousel
-              slides={carouselSlides}
-              autoPlay={!prefersReducedMotion}
-              autoPlayInterval={5000}
-              showControls={true}
-              showIndicators={true}
-              dragEnabled={true}
-              className="rounded-2xl overflow-hidden"
-            />
           </div>
         </div>
       </section>
 
+      <section
+        ref={cardsContainerRef}
+        className="relative h-screen bg-black overflow-hidden"
+      >
+        <LandingCardScanner />
+      </section>
+
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm sm:text-base">
-            &copy; {new Date().getFullYear()} النسخة - جميع الحقوق محفوظة
+      <footer className="relative bg-black border-t border-white/10 px-4 py-8">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row">
+          <span className="text-2xl text-white">النسخة</span>
+          <p className="text-sm text-white/60">
+            &copy; {new Date().getFullYear()} النسخة. جميع الحقوق محفوظة.
           </p>
         </div>
       </footer>
