@@ -56,6 +56,12 @@ const nextConfig = {
   allowedDevOrigins: ["*.replit.dev", "replit.dev"],
 
   // Performance optimizations
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

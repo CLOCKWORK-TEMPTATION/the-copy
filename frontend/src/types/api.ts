@@ -5,6 +5,15 @@ export interface ApiResponse<T = any> {
   error?: string;
 }
 
+/* HTTP Request Methods */
+export enum RequestMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH'
+}
+
 /* Project Types */
 export interface Project {
   id: string;
@@ -127,6 +136,23 @@ export interface ScriptAnalysis {
   characters: string[];
   locations: string[];
   visualSuggestions: string[];
+}
+
+export interface ShotSuggestionsResponse {
+  suggestions: Array<{
+    shotType: string;
+    cameraAngle: string;
+    cameraMovement: string;
+    lighting: string;
+    description: string;
+    aiSuggestion?: string;
+  }>;
+}
+
+export interface ChatResponse {
+  message: string;
+  timestamp: string;
+  context?: Record<string, unknown>;
 }
 
 /* Generic API Error */

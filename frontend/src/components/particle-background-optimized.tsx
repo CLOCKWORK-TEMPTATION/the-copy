@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
-import type { ParticleVelocity, ParticlePosition, EffectConfig } from "./particle-effects";
+import type { ParticleVelocity, ParticlePosition, EffectConfig } from "@/components/particle-effects";
 import {
   applySparkEffect,
   applyWaveEffect,
@@ -11,12 +11,12 @@ import {
   calculateWaveColor,
   calculateVortexColor,
   performanceMonitor,
-} from "./particle-effects";
+} from "@/components/particle-effects";
 import {
   getDeviceCapabilities,
   getParticleLODConfig,
   logDeviceCapabilities,
-} from "./device-detection";
+} from "@/components/device-detection";
 import {
   BASELINE,
   STROKE_WIDTH,
@@ -27,7 +27,7 @@ import {
   LETTER_POSITIONS,
   SAMPLING_BOUNDS,
   PARTICLE_THRESHOLDS,
-} from "./particle-letters.constants";
+} from "@/components/particle-letters.constants";
 
 type Effect = "default" | "spark" | "wave" | "vortex";
 

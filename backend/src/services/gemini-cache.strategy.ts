@@ -38,6 +38,12 @@ export const GEMINI_CACHE_TTL = {
   // Full project analysis - cache for 4 hours
   full: 14400,
 
+  // Chat responses - cache for 30 minutes (conversational)
+  chat: 1800,
+
+  // Shot suggestions - cache for 1 hour (creative but stable)
+  'shot-suggestion': 3600,
+
   // Default fallback - 30 minutes
   default: 1800,
 } as const;
@@ -52,6 +58,8 @@ export const GEMINI_CACHE_PREFIX = {
   character: 'gemini:character',
   shot: 'gemini:shot',
   project: 'gemini:project',
+  chat: 'gemini:chat',
+  'shot-suggestion': 'gemini:shot-suggestion',
 } as const;
 
 /**
@@ -64,6 +72,10 @@ export function generateGeminiCacheKey(
     analysisType?: string;
     entityId?: string;
     options?: Record<string, any>;
+    message?: string;
+    context?: any;
+    sceneDescription?: string;
+    shotType?: string;
   }
 ): string {
   const keyPrefix = GEMINI_CACHE_PREFIX[prefix];
@@ -87,6 +99,32 @@ export function generateGeminiCacheKey(
       .substring(0, 16);
 
     return `${keyPrefix}:${params.analysisType || 'default'}:${textHash}`;
+  }
+
+  // For chat messages
+  if (params.message) {
+    const messageHash = crypto
+      .createHash('sha256')
+      .update(params.message)
+      .digest('hex')
+      .substring(0, 16);
+
+    const contextHash = params.context
+      ? crypto.createHash('sha256').update(JSON.stringify(params.context)).digest('hex').substring(0, 8)
+      : '';
+
+    return `${keyPrefix}:${messageHash}${contextHash ? `:${contextHash}` : ''}`;
+  }
+
+  // For shot suggestions
+  if (params.sceneDescription) {
+    const sceneHash = crypto
+      .createHash('sha256')
+      .update(params.sceneDescription)
+      .digest('hex')
+      .substring(0, 16);
+
+    return `${keyPrefix}:${params.shotType || 'default'}:${sceneHash}`;
   }
 
   // Fallback to generic key

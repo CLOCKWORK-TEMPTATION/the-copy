@@ -62,10 +62,10 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
 
   useEffect(() => {
     if (shot) {
-      setShotType(shot.shotType);
-      setCameraAngle(shot.cameraAngle);
-      setCameraMovement(shot.cameraMovement);
-      setLighting(shot.lighting);
+      setShotType(shot.shotType || "medium");
+      setCameraAngle(shot.cameraAngle || "eye-level");
+      setCameraMovement(shot.cameraMovement || "static");
+      setLighting(shot.lighting || "natural");
       if (shot.aiSuggestion) {
         try {
           setAiSuggestion(JSON.parse(shot.aiSuggestion));

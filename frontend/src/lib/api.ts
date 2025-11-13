@@ -1,5 +1,5 @@
 // Environment variables are accessed via process.env
-import type {
+import {
   ApiResponse,
   Project,
   RequestMethod,

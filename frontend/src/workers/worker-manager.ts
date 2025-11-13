@@ -9,7 +9,7 @@ import type {
   UpdateParticlesResult,
   ParticleData,
   WorkerPool
-} from './types';
+} from '@/workers/types';
 
 export class ParticleWorkerManager {
   private workerPool: WorkerPool = {

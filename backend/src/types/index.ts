@@ -39,6 +39,7 @@ export interface StationOutput {
   executionTime: number;
   status: 'completed' | 'failed';
   timestamp: string;
+  details?: Record<string, any>;
 }
 
 export interface Station1Output extends StationOutput {
@@ -59,12 +60,12 @@ export interface Station1Output extends StationOutput {
 export interface PipelineRunResult {
   stationOutputs: {
     station1: Station1Output;
-    station2: any;
-    station3: any;
-    station4: any;
-    station5: any;
-    station6: any;
-    station7: any;
+    station2: StationOutput;
+    station3: StationOutput;
+    station4: StationOutput;
+    station5: StationOutput;
+    station6: StationOutput;
+    station7: StationOutput;
   };
   pipelineMetadata: {
     stationsCompleted: number;

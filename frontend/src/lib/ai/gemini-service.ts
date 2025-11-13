@@ -4,6 +4,6 @@
  */
 
 // Re-export from gemini-core for compatibility
-export { GeminiModel } from './gemini-core';
-export type { GeminiConfig, GeminiService } from './gemini-core';
-export { GeminiCore, createGeminiCore, getGeminiService } from './gemini-core';
+export { GeminiModel } from '@/lib/ai/gemini-core';
+export type { GeminiConfig, GeminiService } from '@/lib/ai/gemini-core';
+export { GeminiCore, createGeminiCore, getGeminiService } from '@/lib/ai/gemini-core';

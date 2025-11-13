@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { CreativeWritingStudio } from './CreativeWritingStudio';
+import { CreativeWritingStudio } from '@/app/(main)/arabic-creative-writing-studio/components/CreativeWritingStudio';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock the child components

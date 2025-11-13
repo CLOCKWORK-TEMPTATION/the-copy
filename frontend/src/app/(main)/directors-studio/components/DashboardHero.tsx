@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Film, Upload, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import ProjectManager from "./ProjectManager";
+import ProjectManager from "@/app/(main)/directors-studio/components/ProjectManager";
 
 export default function DashboardHero() {
   const scrollToUpload = () => {

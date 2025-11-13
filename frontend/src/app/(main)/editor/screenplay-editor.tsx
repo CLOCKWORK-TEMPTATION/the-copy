@@ -8,7 +8,7 @@ import {
   executeShortcut,
   type ScreenplayFormat as KeyboardScreenplayFormat,
   type FormatAction,
-} from "./keyboard-handlers";
+} from "@/app/(main)/editor/keyboard-handlers";
 import {
   processBlankLine,
   processBasmalaLine,
@@ -26,14 +26,14 @@ import {
   convertDialogueToAction,
   type LineProcessingContext,
   type LineProcessingResult,
-} from "./paste-handlers";
+} from "@/app/(main)/editor/paste-handlers";
 import {
   startsWithActionPattern,
   containsActionIndicator,
   hasActionWithPunctuation,
   isLongLineWithAction,
-} from "./action-classifiers";
-import * as CharacterLineDetector from "./utils/character-line-detector";
+} from "@/app/(main)/editor/action-classifiers";
+import * as CharacterLineDetector from "@/app/(main)/editor/utils/character-line-detector";
 import {
   Sparkles,
   X,

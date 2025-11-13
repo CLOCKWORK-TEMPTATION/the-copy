@@ -1,4 +1,4 @@
-import { PipelineInput, PipelineRunResult, Station1Output } from '@/types';
+import { PipelineInput, PipelineRunResult, Station1Output, StationOutput } from '@/types';
 import { GeminiService } from './gemini.service';
 import { logger } from '@/utils/logger';
 
@@ -17,26 +17,36 @@ export class AnalysisService {
       // Station 1: Text Analysis
       const station1Output = await this.runStation1(input);
       
-      // Station 2-7: Mock implementations for now
-      const mockStationOutput = {
-        stationId: 2,
-        stationName: 'Mock Station',
-        executionTime: 100,
-        status: 'completed' as const,
-        timestamp: new Date().toISOString(),
-      };
+      // Run stations 2-7 in parallel for efficiency
+      const [station2Output, station3Output, station4Output, station5Output, station6Output] = await Promise.all([
+        this.runStation2(input),
+        this.runStation3(input),
+        this.runStation4(input),
+        this.runStation5(input),
+        this.runStation6(input),
+      ]);
+
+      // Station 7 runs last, taking other outputs as context
+      const station7Output = await this.runStation7(input, {
+        station1: station1Output,
+        station2: station2Output,
+        station3: station3Output,
+        station4: station4Output,
+        station5: station5Output,
+        station6: station6Output,
+      });
 
       const endTime = Date.now();
       
       return {
         stationOutputs: {
           station1: station1Output,
-          station2: mockStationOutput,
-          station3: mockStationOutput,
-          station4: mockStationOutput,
-          station5: mockStationOutput,
-          station6: mockStationOutput,
-          station7: mockStationOutput,
+          station2: station2Output,
+          station3: station3Output,
+          station4: station4Output,
+          station5: station5Output,
+          station6: station6Output,
+          station7: station7Output,
         },
         pipelineMetadata: {
           stationsCompleted: 7,
@@ -113,5 +123,114 @@ export class AnalysisService {
         strength: 0.9,
       },
     ];
+  }
+
+  private async runStation2(input: PipelineInput): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const analysis = await this.geminiService.analyzeText(input.fullText, 'themes');
+      return {
+        stationId: 2,
+        stationName: 'التحليل المفاهيمي',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { themes: analysis.split('\n') },
+      };
+    } catch (error) {
+      logger.error('Station 2 failed:', error);
+      throw new Error('فشل في التحليل المفاهيمي');
+    }
+  }
+
+  private async runStation3(input: PipelineInput): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const analysis = await this.geminiService.analyzeText(input.fullText, 'relationships');
+      return {
+        stationId: 3,
+        stationName: 'شبكة الصراعات',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { conflicts: analysis },
+      };
+    } catch (error) {
+      logger.error('Station 3 failed:', error);
+      throw new Error('فشل في تحليل شبكة الصراعات');
+    }
+  }
+
+  private async runStation4(input: PipelineInput): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const analysis = await this.geminiService.analyzeText(input.fullText, 'effectiveness');
+      return {
+        stationId: 4,
+        stationName: 'مقاييس الفعالية',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { effectiveness: analysis },
+      };
+    } catch (error) {
+      logger.error('Station 4 failed:', error);
+      throw new Error('فشل في قياس الفعالية');
+    }
+  }
+
+  private async runStation5(input: PipelineInput): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const analysis = await this.geminiService.analyzeText(input.fullText, 'symbolism');
+      return {
+        stationId: 5,
+        stationName: 'الديناميكية والرمزية',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { symbolism: analysis },
+      };
+    } catch (error) {
+      logger.error('Station 5 failed:', error);
+      throw new Error('فشل في تحليل الديناميكية والرمزية');
+    }
+  }
+
+  private async runStation6(input: PipelineInput): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const review = await this.geminiService.reviewScreenplay(input.fullText);
+      return {
+        stationId: 6,
+        stationName: 'الفريق الأحمر',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { criticalReview: review },
+      };
+    } catch (error) {
+      logger.error('Station 6 failed:', error);
+      throw new Error('فشل في تحليل الفريق الأحمر');
+    }
+  }
+
+  private async runStation7(input: PipelineInput, allOutputs: Record<string, any>): Promise<StationOutput> {
+    const startTime = Date.now();
+    try {
+      const summaryContext = `بناءً على التحليلات التالية، قم بإنشاء تقرير نهائي متكامل:\n\n${JSON.stringify(allOutputs, null, 2)}`;
+      const finalReport = await this.geminiService.analyzeText(summaryContext, 'summary');
+      return {
+        stationId: 7,
+        stationName: 'التقرير النهائي',
+        executionTime: Date.now() - startTime,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        details: { finalReport },
+      };
+    } catch (error) {
+      logger.error('Station 7 failed:', error);
+      throw new Error('فشل في إنشاء التقرير النهائي');
+    }
   }
 }

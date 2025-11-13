@@ -1,7 +1,7 @@
 // Stub file created by Worktree-5 to resolve type errors
 // This module was referenced but missing from the codebase
 
-import { TaskType, TaskCategory } from './enums';
+import { TaskType, TaskCategory } from '@/lib/drama-analyst/enums';
 
 export const DEFAULT_TIMEOUT = 30000;
 export const MAX_RETRIES = 3;

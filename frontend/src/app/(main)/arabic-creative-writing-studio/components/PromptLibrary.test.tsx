@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { PromptLibrary } from './PromptLibrary';
+import { PromptLibrary } from '@/app/(main)/arabic-creative-writing-studio/components/PromptLibrary';
 import { vi, describe, it, expect } from 'vitest';
 
 describe('PromptLibrary', () => {

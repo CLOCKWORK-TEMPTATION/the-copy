@@ -1,23 +1,23 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { PageLayout } from "./components/PageLayout";
-import { LoadingSection } from "./components/LoadingSection";
-import { useProjectScenes, useProjectCharacters } from "./hooks/useProject";
-import { getCurrentProject } from "./lib/projectStore";
+import { PageLayout } from "@/app/(main)/directors-studio/components/PageLayout";
+import { LoadingSection } from "@/app/(main)/directors-studio/components/LoadingSection";
+import { useProjectScenes, useProjectCharacters } from "@/app/(main)/directors-studio/hooks/useProject";
+import { getCurrentProject } from "@/app/(main)/directors-studio/lib/projectStore";
 import {
   hasActiveProject,
   prepareCharacterList,
   type CharacterTrackerProps,
   type ProjectCharacterInput,
   type SceneCardProps,
-} from "./helpers/projectSummary";
+} from "@/app/(main)/directors-studio/helpers/projectSummary";
 
-const NoProjectSection = dynamic(() => import("./components/NoProjectSection").then((mod) => ({ default: mod.NoProjectSection })), {
+const NoProjectSection = dynamic(() => import("@/app/(main)/directors-studio/components/NoProjectSection").then((mod) => ({ default: mod.NoProjectSection })), {
   ssr: false,
 });
 
-const ProjectContent = dynamic(() => import("./components/ProjectContent").then((mod) => ({ default: mod.ProjectContent })), {
+const ProjectContent = dynamic(() => import("@/app/(main)/directors-studio/components/ProjectContent").then((mod) => ({ default: mod.ProjectContent })), {
   ssr: false,
 });
 

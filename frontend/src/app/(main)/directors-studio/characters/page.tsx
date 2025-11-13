@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, User } from "lucide-react";
 import CharacterFormDialog from "@/app/(main)/directors-studio/components/CharacterFormDialog";
 import { VirtualizedGrid } from "@/components/ui/virtualized-grid";
-import type { Character } from "@shared/schema";
+import type { Character } from "@/types/api";
 
 export default function CharactersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -252,7 +252,7 @@ export default function CharactersPage() {
       <CharacterFormDialog
         open={isDialogOpen}
         onOpenChange={handleDialogClose}
-        character={selectedCharacter || undefined}
+        {...(selectedCharacter && { character: selectedCharacter })}
         projectId={currentProjectId}
       />
     </div>

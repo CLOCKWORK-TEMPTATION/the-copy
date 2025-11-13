@@ -3,6 +3,8 @@
  * Provides core functionality for Google Gemini AI integration
  */
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export enum GeminiModel {
   FLASH = 'gemini-1.5-flash',
   PRO = 'gemini-pro',
@@ -38,10 +40,20 @@ export class GeminiCore implements GeminiService {
   }
 
   async generateContent(prompt: string, options?: Partial<GeminiConfig>): Promise<string> {
-    // Implementation would use the actual Gemini API
-    // This is a stub for now
-    const mergedConfig = { ...this.config, ...options };
-    return `Generated content for: ${prompt} (model: ${mergedConfig.model})`;
+    const response = await fetch(`${API_BASE_URL}/api/ai/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt, options })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.content || data.response || data;
   }
 
   async* generateContentStream(prompt: string, options?: Partial<GeminiConfig>): AsyncIterableIterator<string> {

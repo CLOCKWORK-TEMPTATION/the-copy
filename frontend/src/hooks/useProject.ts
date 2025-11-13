@@ -17,7 +17,7 @@ export function useProjects() {
   return useQuery({
     queryKey: ["/api/projects"],
     queryFn: async () => {
-      const response = await api.getProjects();
+      const response = await api.fetchProjects();
       return response.data;
     },
   });
@@ -27,7 +27,7 @@ export function useProject(id: string | undefined) {
   return useQuery({
     queryKey: ["/api/projects", id],
     queryFn: async () => {
-      const response = await api.getProject(id!);
+      const response = await api.fetchProject(id!);
       return response.data;
     },
     enabled: !!id,
@@ -130,8 +130,14 @@ export function useAnalyzeScript() {
 
 export function useCreateScene() {
   return useMutation({
-    mutationFn: (data: { projectId: string } & CreateSceneRequest) =>
-      api.createScene(data.projectId, data),
+    mutationFn: async (data: { projectId: string } & CreateSceneRequest) => {
+      const res = await fetch(`/api/projects/${data.projectId}/scenes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
     },
@@ -140,7 +146,14 @@ export function useCreateScene() {
 
 export function useUpdateScene() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateSceneRequest }) => api.updateScene(id, data),
+    mutationFn: async ({ id, data }: { id: string; data: UpdateSceneRequest }) => {
+      const res = await fetch(`/api/scenes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "scenes"
@@ -151,7 +164,10 @@ export function useUpdateScene() {
 
 export function useDeleteScene() {
   return useMutation({
-    mutationFn: (id: string) => api.deleteScene(id),
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/scenes/${id}`, { method: "DELETE" });
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) => 
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "scenes"
@@ -173,8 +189,14 @@ export function useSceneShots(sceneId: string | undefined) {
 
 export function useCreateShot() {
   return useMutation({
-    mutationFn: (data: { sceneId: string } & CreateShotRequest) =>
-      api.createShot(data.sceneId, data),
+    mutationFn: async (data: { sceneId: string } & CreateShotRequest) => {
+      const res = await fetch(`/api/scenes/${data.sceneId}/shots`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scenes", variables.sceneId, "shots"] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
@@ -184,7 +206,14 @@ export function useCreateShot() {
 
 export function useUpdateShot() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateShotRequest }) => api.updateShot(id, data),
+    mutationFn: async ({ id, data }: { id: string; data: UpdateShotRequest }) => {
+      const res = await fetch(`/api/shots/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/scenes" && query.queryKey[2] === "shots"
@@ -198,7 +227,10 @@ export function useUpdateShot() {
 
 export function useDeleteShot() {
   return useMutation({
-    mutationFn: (id: string) => api.deleteShot(id),
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/shots/${id}`, { method: "DELETE" });
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) => 
         query.queryKey[0] === "/api/scenes" && query.queryKey[2] === "shots"

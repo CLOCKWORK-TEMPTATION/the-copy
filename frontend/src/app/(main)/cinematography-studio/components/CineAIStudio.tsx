@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 // Import tool components
-import PreProductionTools from './tools/PreProductionTools';
-import ProductionTools from './tools/ProductionTools';
-import PostProductionTools from './tools/PostProductionTools';
+import PreProductionTools from '@/app/(main)/cinematography-studio/components/tools/PreProductionTools';
+import ProductionTools from '@/app/(main)/cinematography-studio/components/tools/ProductionTools';
+import PostProductionTools from '@/app/(main)/cinematography-studio/components/tools/PostProductionTools';
 
 export const CineAIStudio: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<'pre' | 'production' | 'post'>('pre');

@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
 import { logger } from '@/utils/logger';
 import { queueAIAnalysis } from '@/queues/jobs/ai-analysis.job';
+import { AnalysisService } from '@/services/analysis.service';
 
 // تم إيقاف استيراد كود من الواجهة الأمامية لتجنب أخطاء rootDir في TypeScript
 
 export class AnalysisController {
-  constructor() {}
+  private analysisService: AnalysisService;
+
+  constructor() {
+    this.analysisService = new AnalysisService();
+  }
 
   /**
    * Run Seven Stations Pipeline (asynchronous via queue)
@@ -53,28 +58,38 @@ export class AnalysisController {
         return;
       }
 
-      // Synchronous execution (for backward compatibility)
-      // تنفيذ مبسّط مؤقتًا حتى نقل منطق المحطات إلى حزمة مشتركة
-      const result = {
-        finalReport: `تم استلام النص بطول ${text.length} حرفًا. (وضع التطوير المؤقت)`,
-        totalConfidence: 0.0
-      };
+      // Synchronous execution using AnalysisService
+      const pipelineResult = await this.analysisService.runFullPipeline({
+        fullText: text,
+        projectName: 'تحليل سيناريو',
+        language: 'ar',
+        context: {},
+        flags: {
+          runStations: true,
+          fastMode: false,
+          skipValidation: false,
+          verboseLogging: false,
+        },
+        agents: { temperature: 0.2 },
+      });
 
       const endTime = Date.now();
 
-      // إرجاع النتيجة بتنسيق نصي عربي فقط
+      // إرجاع النتيجة بتنسيق متقدم
       res.json({
         success: true,
-        report: result.finalReport,
-        confidence: result.totalConfidence,
+        report: pipelineResult.stationOutputs.station7.details?.finalReport || 'تحليل غير متاح',
+        confidence: 0.85, // قيمة افتراضية يمكن تحسينها لاحقاً
         executionTime: endTime - startTime,
         timestamp: new Date().toISOString(),
-        stationsCount: 7
+        stationsCount: 7,
+        detailedResults: pipelineResult.stationOutputs,
+        metadata: pipelineResult.pipelineMetadata
       });
 
       logger.info('تم إكمال معالجة مبسّطة بنجاح', {
         executionTime: endTime - startTime,
-        confidence: result.totalConfidence
+        confidence: 0.85
       });
 
     } catch (error) {

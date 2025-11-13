@@ -21,13 +21,11 @@ export default function ScriptUploadZone() {
       const project = await createProject.mutateAsync({ title: "مشروع جديد" });
       if ("data" in project && project.data) {
         setCurrentProject(project.data);
-      }
-
-      if ("data" in project && project.data) {
+        const scriptText = await file.text();
         await analyzeScript.mutateAsync({
           projectId: project.data.id,
-          file,
-        } as any);
+          script: scriptText,
+        });
       }
 
       toast({

@@ -24,6 +24,12 @@ import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Textarea } from "./ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+
+// Minimal ContextMap type to avoid missing type errors when chunking is disabled
+type ContextMap = {
+  chunks: Array<{ id: string; content: string }>;
+  totalTokens: number;
+};
 // Dynamically import heavy components
 const FileUpload = dynamic(() => import("./file-upload"), {
   loading: () => (
@@ -136,103 +142,11 @@ const StationsPipeline = () => {
 
         let pipelineResult;
 
-        // Chunking logic commented out - process as single text
-        if (false) {
-          // Process chunks with context
-          const chunkResults: any[] = [];
-
-          /*
-          for (let i = 0; i < chunkedData.chunks.length; i++) {
-            const chunk = chunkedData.chunks[i];
-            if (!chunk) continue;
-
-            const contextPrompt = textChunker.buildContextPrompt(
-              chunkedData,
-              chunk.id
-            );
-
-            const chunkResult = await runFullPipeline({
-              fullText: chunk.content,
-              projectName: `تحليل الجزء ${i + 1} من ${chunkedData.chunks.length}`,
-              context: {
-                globalContext: contextPrompt,
-                chunkId: chunk.id,
-                totalChunks: chunkedData.chunks.length,
-                currentChunk: i + 1,
-              },
-            });
-
-            chunkResults.push(chunkResult);
-          }
-          */
-
-          // Merge results
-          pipelineResult = {
-            stationOutputs: {
-              station1: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station1
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station2: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station2
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station3: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station3
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station4: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station4
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station5: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station5
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station6: {
-                chunks: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station6
-                ),
-                summary: "تحليل مدمج من عدة أجزاء",
-              },
-              station7: {
-                fullAnalysis: chunkResults.map(
-                  (r: any) => r.stationOutputs?.station7
-                ),
-                // contextMap: chunkedData,
-                summary: `تقرير شامل مدمج من ${chunkResults.length} جزء`,
-                totalChunks: chunkResults.length,
-              },
-            },
-            pipelineMetadata: {
-              stationsCompleted: 7,
-              totalExecutionTime: chunkResults.reduce(
-                (sum, r) => sum + (r.pipelineMetadata?.totalExecutionTime || 0),
-                0
-              ),
-              startedAt:
-                chunkResults[0]?.pipelineMetadata?.startedAt ||
-                new Date().toISOString(),
-              finishedAt: new Date().toISOString(),
-              chunksProcessed: chunkResults.length,
-            },
-          };
-        } else {
-          pipelineResult = await runFullPipeline({
-            fullText: text,
-            projectName: "تحليل درامي شامل",
-          });
-        }
+        // Process as single text (chunking disabled)
+        const pipelineResult = await runFullPipeline({
+          fullText: text,
+          projectName: "تحليل درامي شامل",
+        });
 
         const formattedResults = {
           station1: (pipelineResult as any).stationOutputs?.station1,
@@ -248,7 +162,7 @@ const StationsPipeline = () => {
         const analysisId = `analysis_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const analysisData = {
           ...pipelineResult,
-          contextMap: chunkedData,
+          contextMap,
           isLongText,
           originalTextLength: text.length,
         };
@@ -259,7 +173,7 @@ const StationsPipeline = () => {
         );
         sessionStorage.setItem("analysisId", analysisId);
         sessionStorage.setItem("originalText", text);
-        sessionStorage.setItem("contextMap", JSON.stringify(chunkedData));
+        sessionStorage.setItem("contextMap", JSON.stringify(contextMap));
 
         setResults(formattedResults);
         setStatuses(Array(stations.length).fill("completed"));
@@ -267,7 +181,7 @@ const StationsPipeline = () => {
         toast({
           title: "اكتمل التحليل",
           description: isLongText
-            ? `تم تحليل النص الطويل (${chunkedData.chunks.length} أجزاء) وحفظ النتائج لقسم التطوير الإبداعي.`
+            ? `تم تحليل النص الطويل (${contextMap?.chunks.length ?? 0} أجزاء) وحفظ النتائج لقسم التطوير الإبداعي.`
             : "تم حفظ النتائج لقسم التطوير الإبداعي. يمكنك الآن الانتقال لصفحة التطوير.",
         });
       } catch (error: any) {

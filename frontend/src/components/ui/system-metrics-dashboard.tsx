@@ -11,7 +11,7 @@
  * - Performance alerts
  */
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -251,9 +251,9 @@ export default function SystemMetricsDashboard() {
       <Card className={`border-${healthStatus.color}-500`}>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <healthStatus.icon
-              className={`w-5 h-5 text-${healthStatus.color}-600`}
-            />
+            {React.createElement(healthStatus.icon, {
+              className: `w-5 h-5 text-${healthStatus.color}-600`,
+            })}
             حالة النظام: {healthStatus.text}
           </CardTitle>
         </CardHeader>

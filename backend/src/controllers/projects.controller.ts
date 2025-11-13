@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '@/db';
-import { projects, scenes, characters, shots } from '@/db/schema';
+import { projects, NewProject } from '@/db/schema';
+import { AnalysisService } from '@/services/analysis.service';
 import { eq, desc, and } from 'drizzle-orm';
 import { logger } from '@/utils/logger';
 import { z } from 'zod';
@@ -318,16 +319,26 @@ export class ProjectsController {
       // This extracts scenes, characters, and suggestions
       // For now, return a placeholder response
 
-      // TODO: Implement Gemini service integration
-      const analysisResult = { message: 'تحليل الشخصيات قيد التطوير' };
-      const scenesResult = { message: 'تحليل البنية قيد التطوير' };
+      const analysisService = new AnalysisService();
+      const analysisResult = await analysisService.runFullPipeline({
+        projectName: project.title,
+        fullText: project.scriptContent,
+        language: 'ar',
+        context: {},
+        flags: {
+          runStations: true,
+          fastMode: false,
+          skipValidation: false,
+          verboseLogging: false,
+        },
+        agents: { temperature: 0.2 },
+      });
 
       res.json({
         success: true,
         message: 'تم تحليل السيناريو بنجاح',
         data: {
           analysis: analysisResult,
-          scenes: scenesResult,
           projectId: id,
         },
       });

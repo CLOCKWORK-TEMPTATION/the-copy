@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   getTaskIcon as getTaskIconUtil,
   getCreativeTaskIcon as getCreativeTaskIconUtil,
-} from "./utils/task-icon-mapper";
+} from "@/app/(main)/development/utils/task-icon-mapper";
 import { toText } from "@/lib/ai/gemini-core";
 import {
   AIResponse,

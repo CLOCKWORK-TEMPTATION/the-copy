@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import { logger } from '@/utils/logger';
 import { z } from 'zod';
 import type { AuthRequest } from '@/middleware/auth.middleware';
+import { GeminiService } from '@/services/gemini.service';
 
 const createShotSchema = z.object({
   sceneId: z.string().min(1, 'معرف المشهد مطلوب'),
@@ -352,6 +353,50 @@ export class ShotsController {
       res.status(500).json({
         success: false,
         error: 'حدث خطأ أثناء حذف اللقطة',
+      });
+    }
+  }
+
+  // Generate AI-powered shot suggestions
+  async generateShotSuggestion(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'غير مصرح',
+        });
+        return;
+      }
+
+      const { sceneDescription, shotType } = req.body;
+
+      if (!sceneDescription || !shotType) {
+        res.status(400).json({
+          success: false,
+          error: 'وصف المشهد ونوع اللقطة مطلوبان',
+        });
+        return;
+      }
+
+      const geminiService = new GeminiService();
+      const suggestion = await geminiService.getShotSuggestion(sceneDescription, shotType);
+
+      res.json({
+        success: true,
+        message: 'تم توليد اقتراحات اللقطة بنجاح',
+        data: {
+          suggestion,
+          sceneDescription,
+          shotType,
+        },
+      });
+
+      logger.info('Shot suggestion generated successfully', { userId: req.user.id });
+    } catch (error) {
+      logger.error('Generate shot suggestion error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'حدث خطأ أثناء توليد اقتراحات اللقطة',
       });
     }
   }

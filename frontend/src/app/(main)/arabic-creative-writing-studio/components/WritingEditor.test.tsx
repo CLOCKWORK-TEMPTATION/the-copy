@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { WritingEditor } from './WritingEditor';
+import { WritingEditor } from '@/app/(main)/arabic-creative-writing-studio/components/WritingEditor';
 import { vi, describe, it, expect } from 'vitest';
 
 const mockProject = {

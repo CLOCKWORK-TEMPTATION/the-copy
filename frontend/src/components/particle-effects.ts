@@ -8,7 +8,7 @@
  * - Dynamic quality adjustment
  */
 
-import { getDeviceCapabilities, getParticleLODConfig, PerformanceMonitor } from './device-detection';
+import { getDeviceCapabilities, getParticleLODConfig, PerformanceMonitor } from '@/components/device-detection';
 
 /**
  * Enhanced requestIdleCallback with fallback
