@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { VideoTextMask } from "@/components/landing/video-text-mask";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { VideoTextMask } from "@/components/video-text-mask";
 import { LandingCardScanner } from "@/components/card-scanner/landing-card-scanner";
 
 // Register GSAP plugin
@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function LandingPage() {
+export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
@@ -87,8 +87,8 @@ export default function LandingPage() {
       {/* Fixed Header - Hidden Initially */}
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 bg-black text-white border-b border-white/10"
-        style={{ opacity: 0, zIndex: 9999 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-black text-white border-b border-white/10"
+        style={{ opacity: 0 }}
       >
         <div className="container mx-auto flex items-center justify-center px-6 py-4">
           <a href="#" aria-label="العودة للصفحة الرئيسية" className="cursor-pointer">
@@ -104,7 +104,7 @@ export default function LandingPage() {
       >
         <VideoTextMask
           ref={maskContentRef}
-          videoSrc="/promise-video.mp4"
+          videoSrc="https://cdn.pixabay.com/video/2025/11/09/314880.mp4"
           text="النسخة"
           className="w-full h-full"
         />

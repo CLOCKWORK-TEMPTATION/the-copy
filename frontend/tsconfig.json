@@ -36,6 +36,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/config/*": ["./src/config/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/styles/*": ["./src/styles/*"],
       "@core/*": ["./src/lib/drama-analyst/*"],
       "@agents/*": ["./src/lib/drama-analyst/agents/*"],
       "@services/*": ["./src/lib/drama-analyst/services/*"],
