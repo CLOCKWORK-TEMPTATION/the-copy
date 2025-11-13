@@ -5,7 +5,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { CreativeWritingStudio } from '@/app/(main)/arabic-creative-writing-studio/components/CreativeWritingStudio';
+import { CreativeWritingStudio } from '@/components/CreativeWritingStudio';
 
 // Mock dependencies
 vi.mock('@/app/(main)/arabic-creative-writing-studio/lib/gemini-service', () => ({
