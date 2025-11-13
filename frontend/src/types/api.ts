@@ -25,21 +25,22 @@ export interface ApiResponse<T = any> {
 // Project Types
 export interface Project {
   id: string;
-  name: string;
-  description?: string;
+  title: string;
+  scriptContent?: string;
+  userId?: string;
   createdAt: string;
   updatedAt: string;
   scenes?: Scene[];
 }
 
 export interface CreateProjectRequest {
-  name: string;
-  description?: string;
+  title: string;
+  scriptContent?: string;
 }
 
 export interface UpdateProjectRequest {
-  name?: string;
-  description?: string;
+  title?: string;
+  scriptContent?: string;
 }
 
 // Scene Types
