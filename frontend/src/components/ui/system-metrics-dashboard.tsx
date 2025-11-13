@@ -42,20 +42,17 @@ import {
   TrendingDown,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  DynamicLineChart as LineChart,
+  DynamicLine as Line,
+  DynamicBarChart as BarChart,
+  DynamicBar as Bar,
+  DynamicPieChart as PieChart,
+  DynamicPie as Pie,
+  DynamicXAxis as XAxis,
+  DynamicYAxis as YAxis,
+  DynamicCartesianGrid as CartesianGrid,
+} from "@/components/ui/dynamic-chart";
+import { Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import {
   useDashboardSummary,
   useHealthStatus,
