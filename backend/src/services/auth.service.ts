@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { db } from '../db';
-import { users, type User, type NewUser } from '../db/schema';
+import { db } from '@/db';
+import { users, type User, type NewUser } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { env } from '@/config/env';
 

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { db } from '../db';
-import { scenes, projects } from '../db/schema';
+import { db } from '@/db';
+import { scenes, projects } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 import { z } from 'zod';
-import type { AuthRequest } from '../middleware/auth.middleware';
+import type { AuthRequest } from '@/middleware/auth.middleware';
 
 const createSceneSchema = z.object({
   projectId: z.string().min(1, 'معرف المشروع مطلوب'),

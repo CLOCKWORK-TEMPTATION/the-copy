@@ -5,7 +5,7 @@
  */
 
 import { Job } from 'bullmq';
-import { queueManager, QueueName } from '../queue.config';
+import { queueManager, QueueName } from '@/queues/queue.config';
 
 // Job data types
 export interface AIAnalysisJobData {
