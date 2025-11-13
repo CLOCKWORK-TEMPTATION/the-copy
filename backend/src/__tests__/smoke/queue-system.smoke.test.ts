@@ -5,9 +5,9 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { queueManager, QueueName } from '../../queues/queue.config';
-import { queueAIAnalysis } from '../../queues/jobs/ai-analysis.job';
-import { queueDocumentProcessing } from '../../queues/jobs/document-processing.job';
+import { queueManager, QueueName } from '@/queues/queue.config';
+import { queueAIAnalysis } from '@/queues/jobs/ai-analysis.job';
+import { queueDocumentProcessing } from '@/queues/jobs/document-processing.job';
 
 describe('Queue System Smoke Tests', () => {
   afterAll(async () => {
