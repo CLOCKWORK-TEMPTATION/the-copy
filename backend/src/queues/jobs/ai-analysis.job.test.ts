@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { queueAIAnalysis, registerAIAnalysisWorker, AIAnalysisJobData } from './ai-analysis.job';
-import { queueManager, QueueName } from '../queue.config';
+import { queueManager, QueueName } from '@/queues/queue.config';
 
 describe('AI Analysis Job Processing', () => {
   beforeEach(() => {
