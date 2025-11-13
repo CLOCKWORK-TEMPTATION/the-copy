@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { ExportHub } from "../components/ExportHub";
-import { TasksBoard } from "../components/TasksBoard";
-import { VersionsPanel } from "../components/VersionsPanel";
-import { RhythmMap } from "../components/RhythmMap";
+import { ExportHub } from "@/app/(main)/ui/components/ExportHub";
+import { TasksBoard } from "@/app/(main)/ui/components/TasksBoard";
+import { VersionsPanel } from "@/app/(main)/ui/components/VersionsPanel";
+import { RhythmMap } from "@/app/(main)/ui/components/RhythmMap";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

@@ -4,7 +4,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { CreativePrompt, CreativeGenre, WritingTechnique, DifficultyLevel } from '../types';
+import { CreativePrompt, CreativeGenre, WritingTechnique, DifficultyLevel } from '@/app/(main)/arabic-creative-writing-studio/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';

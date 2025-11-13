@@ -26,7 +26,7 @@ import {
   Target,
   TrendingUp,
 } from "lucide-react";
-import { designTokens } from "../ui/tokens/design-tokens";
+import { designTokens } from "@/app/(main)/ui/tokens/design-tokens";
 
 export default function NewFeature() {
   const [activeTab, setActiveTab] = useState("overview");
