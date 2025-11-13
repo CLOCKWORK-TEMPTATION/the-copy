@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateCharacter, useUpdateCharacter } from "@/hooks/useProject";
-import type { Character } from "@shared/schema";
+import type { Character } from "@/types/api";
 
 interface CharacterFormDialogProps {
   open: boolean;
@@ -22,16 +22,16 @@ interface CharacterFormState {
   name: string;
   appearances: number;
   consistencyStatus: string;
-  lastSeen: string;
-  notes: string;
+  lastSeen: string | null;
+  notes: string | null;
 }
 
 const mapCharacterToFormData = (value?: Character): CharacterFormState => ({
   name: value?.name ?? "",
   appearances: value?.appearances ?? 0,
   consistencyStatus: value?.consistencyStatus ?? "good",
-  lastSeen: value?.lastSeen ?? "",
-  notes: value?.notes ?? ""
+  lastSeen: value?.lastSeen ?? null,
+  notes: value?.notes ?? null
 });
 
 export default function CharacterFormDialog({
@@ -63,23 +63,24 @@ export default function CharacterFormDialog({
     }
 
     const isEditing = Boolean(character);
-    const payload = {
+    const payload: Omit<Character, 'id' | 'projectId'> = {
       name: formData.name,
       appearances: formData.appearances,
       consistencyStatus: formData.consistencyStatus,
       lastSeen: formData.lastSeen || null,
       notes: formData.notes || null
     };
+    
     const mutation = isEditing
       ? () =>
           updateCharacter.mutateAsync({
             id: character!.id,
-            data: payload
+            data: payload as Partial<Character>
           })
       : () =>
           createCharacter.mutateAsync({
             projectId,
-            ...payload
+            ...(payload as Character)
           });
 
     try {
@@ -156,7 +157,7 @@ export default function CharacterFormDialog({
             <Label htmlFor="lastSeen" className="text-right block">آخر ظهور</Label>
             <Input
               id="lastSeen"
-              value={formData.lastSeen}
+              value={formData.lastSeen ?? ''}
               onChange={(e) => setFormData({ ...formData, lastSeen: e.target.value })}
               dir="rtl"
               placeholder="مثال: المشهد 5"
@@ -168,7 +169,7 @@ export default function CharacterFormDialog({
             <Label htmlFor="notes" className="text-right block">ملاحظات</Label>
             <Textarea
               id="notes"
-              value={formData.notes}
+              value={formData.notes ?? ''}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               dir="rtl"
               placeholder="ملاحظات حول الشخصية..."
