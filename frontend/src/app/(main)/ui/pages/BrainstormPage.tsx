@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ExportHub } from "../components/ExportHub";
+import { ExportHub } from "@/app/(main)/ui/components/ExportHub";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

@@ -4,7 +4,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { CreativeProject, CreativePrompt, AppSettings, TextAnalysis } from '../types';
+import { CreativeProject, CreativePrompt, AppSettings, TextAnalysis } from '@/app/(main)/arabic-creative-writing-studio/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

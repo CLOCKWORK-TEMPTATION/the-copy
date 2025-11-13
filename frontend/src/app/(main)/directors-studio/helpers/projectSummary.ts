@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
-import type CharacterTracker from "../components/CharacterTracker";
-import type SceneCard from "../components/SceneCard";
+import type CharacterTracker from "@/app/(main)/directors-studio/components/CharacterTracker";
+import type SceneCard from "@/app/(main)/directors-studio/components/SceneCard";
 
 export type SceneCardProps = ComponentProps<typeof SceneCard>;
 export type CharacterTrackerProps = ComponentProps<typeof CharacterTracker>;

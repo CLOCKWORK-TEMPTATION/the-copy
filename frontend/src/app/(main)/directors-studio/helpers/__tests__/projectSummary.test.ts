@@ -6,7 +6,7 @@ import {
   type CharacterTrackerProps,
   type ProjectCharacterInput,
   type SceneCardProps,
-} from "../projectSummary";
+} from "@/app/(main)/directors-studio/helpers/projectSummary";
 
 const baseScene: SceneCardProps = {
   id: "scene-1",
