@@ -88,8 +88,14 @@ export function LandingCardScanner() {
         document.addEventListener("mousemove", (e) => this.onDrag(e))
         document.addEventListener("mouseup", () => this.endDrag())
 
-        this.cardLine.addEventListener("touchstart", (e) => this.startDrag(e.touches[0]), { passive: false })
-        document.addEventListener("touchmove", (e) => this.onDrag(e.touches[0]), { passive: false })
+        this.cardLine.addEventListener("touchstart", (e) => {
+          const touch = e.touches[0];
+          if (touch) this.startDrag(touch);
+        }, { passive: false });
+        document.addEventListener("touchmove", (e) => {
+          const touch = e.touches[0];
+          if (touch) this.onDrag(touch);
+        }, { passive: false });
         document.addEventListener("touchend", () => this.endDrag())
 
         this.cardLine.addEventListener("wheel", (e) => this.onWheel(e))
@@ -100,7 +106,9 @@ export function LandingCardScanner() {
       }
 
       startDrag(e: MouseEvent | Touch) {
-        e.preventDefault()
+        if ('preventDefault' in e) {
+          e.preventDefault();
+        }
         this.isDragging = true
         this.isAnimating = false
         this.lastMouseX = e.clientX
@@ -120,7 +128,9 @@ export function LandingCardScanner() {
 
       onDrag(e: MouseEvent | Touch) {
         if (!this.isDragging) return
-        e.preventDefault()
+        if ('preventDefault' in e) {
+          e.preventDefault();
+        }
 
         const deltaX = e.clientX - this.lastMouseX
         this.position += deltaX
@@ -258,7 +268,7 @@ export function LandingCardScanner() {
 
         const cardImage = document.createElement("img")
         cardImage.className = "card-image"
-        cardImage.src = images[imageIndex] || images[0]
+        cardImage.src = images[imageIndex] ?? images[0] ?? ''
         cardImage.alt = card.title
 
         cardImage.onerror = () => {
@@ -311,8 +321,10 @@ export function LandingCardScanner() {
           const cardRight = rect.right
           const cardWidth = rect.width
 
-          const normalCard = wrapper.querySelector(".card-normal") as HTMLElement
-          const asciiCard = wrapper.querySelector(".card-ascii") as HTMLElement
+          const normalCard = wrapper.querySelector(".card-normal") as HTMLElement | null
+          const asciiCard = wrapper.querySelector(".card-ascii") as HTMLElement | null
+          
+          if (!normalCard || !asciiCard) return;
 
           if (cardLeft < scannerRight && cardRight > scannerLeft) {
             anyScanningActive = true
@@ -331,9 +343,7 @@ export function LandingCardScanner() {
               scanEffect.className = "scan-effect"
               wrapper.appendChild(scanEffect)
               setTimeout(() => {
-                if (scanEffect.parentNode) {
-                  scanEffect.parentNode.removeChild(scanEffect)
-                }
+                scanEffect.parentNode?.removeChild(scanEffect);
               }, 600)
             }
           } else {
@@ -369,7 +379,7 @@ export function LandingCardScanner() {
         for (let repeat = 0; repeat < repeatCount; repeat++) {
           CARDS_11.forEach((card) => {
             const slug = card.href.replace("/", "")
-            const imageIndex = cardImageMap[slug] ?? 0
+            const imageIndex = cardImageMap[slug as keyof typeof cardImageMap] ?? 0
             const cardWrapper = this.createCardWrapper(card, imageIndex)
             this.cardLine.appendChild(cardWrapper)
           })

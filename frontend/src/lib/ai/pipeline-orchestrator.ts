@@ -27,4 +27,9 @@ export class PipelineOrchestrator {
   }
 }
 
+export async function runPipelineWithInterfaces(input: any, interfaces?: any): Promise<PipelineResult> {
+  const orchestrator = new PipelineOrchestrator();
+  return orchestrator.run(input);
+}
+
 export default new PipelineOrchestrator();

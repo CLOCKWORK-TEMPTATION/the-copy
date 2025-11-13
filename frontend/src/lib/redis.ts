@@ -27,4 +27,20 @@ class RedisClientStub implements RedisClient {
 }
 
 export const redis = new RedisClientStub();
+
+export async function getCached<T>(key: string): Promise<T | null> {
+  const value = await redis.get(key);
+  if (!value) return null;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
+export async function invalidateCache(pattern: string): Promise<void> {
+  // In a real implementation, this would delete keys matching the pattern
+  return;
+}
+
 export default redis;

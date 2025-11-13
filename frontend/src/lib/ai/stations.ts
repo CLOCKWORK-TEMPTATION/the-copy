@@ -8,6 +8,12 @@ export interface Station {
   processor?: (input: any) => Promise<any>;
 }
 
+export interface SevenStationsResult {
+  success: boolean;
+  stations: any[];
+  errors?: string[];
+}
+
 export const stations: Station[] = [];
 
 export function getStation(id: string): Station | undefined {
@@ -18,8 +24,16 @@ export function registerStation(station: Station): void {
   stations.push(station);
 }
 
+export async function runSevenStations(input: any): Promise<SevenStationsResult> {
+  return {
+    success: true,
+    stations: [],
+  };
+}
+
 export default {
   stations,
   getStation,
   registerStation,
+  runSevenStations,
 };

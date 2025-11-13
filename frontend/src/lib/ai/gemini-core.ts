@@ -52,5 +52,15 @@ export function createGeminiCore(config: GeminiConfig): GeminiCore {
   return new GeminiCore(config);
 }
 
+// Streaming function for Flash model
+export async function* streamFlash(prompt: string, config?: Partial<GeminiConfig>): AsyncIterableIterator<string> {
+  const core = new GeminiCore({
+    apiKey: config?.apiKey || '',
+    model: 'gemini-1.5-flash',
+    ...config,
+  });
+  yield* core.generateContentStream(prompt);
+}
+
 // Default export
 export default GeminiCore;

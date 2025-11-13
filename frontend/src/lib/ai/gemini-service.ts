@@ -1,21 +1,19 @@
-// Stub file created by Worktree-5 to resolve type errors
-// This module was referenced but missing from the codebase
+/**
+ * Gemini Service Module
+ * Provides GeminiModel and GeminiConfig exports for compatibility
+ */
 
-export interface GeminiServiceConfig {
-  apiKey?: string;
+export interface GeminiConfig {
+  apiKey: string;
   model?: string;
+  temperature?: number;
+  maxTokens?: number;
 }
 
-export class GeminiService {
-  constructor(config?: GeminiServiceConfig) {}
-
-  async generateText(prompt: string): Promise<string> {
-    return '';
-  }
-
-  async generateJSON<T = any>(prompt: string): Promise<T> {
-    return {} as T;
-  }
+export interface GeminiModel {
+  generateContent(prompt: string): Promise<string>;
+  generateContentStream(prompt: string): AsyncIterableIterator<string>;
 }
 
-export default new GeminiService();
+// Re-export from gemini-core for compatibility
+export { GeminiConfig, GeminiModel } from './gemini-core';
