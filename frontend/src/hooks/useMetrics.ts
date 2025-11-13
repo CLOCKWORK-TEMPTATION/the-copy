@@ -10,6 +10,12 @@ import type {
   DashboardSummary,
   HealthStatus,
   PerformanceReport,
+  DatabaseMetrics,
+  RedisMetrics,
+  QueueMetrics,
+  ApiMetrics,
+  ResourceMetrics,
+  GeminiMetrics,
 } from '@/types/metrics';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -78,9 +84,9 @@ export function useHealthStatus(refreshInterval = 15000) {
  * Hook to fetch database metrics
  */
 export function useDatabaseMetrics(refreshInterval = 30000) {
-  return useQuery({
+  return useQuery<DatabaseMetrics>({
     queryKey: ['metrics', 'database'],
-    queryFn: () => fetchWithAuth('/api/metrics/database'),
+    queryFn: () => fetchWithAuth<DatabaseMetrics>('/api/metrics/database'),
     refetchInterval: refreshInterval,
     staleTime: 20000,
   });
@@ -90,9 +96,9 @@ export function useDatabaseMetrics(refreshInterval = 30000) {
  * Hook to fetch Redis metrics
  */
 export function useRedisMetrics(refreshInterval = 30000) {
-  return useQuery({
+  return useQuery<RedisMetrics>({
     queryKey: ['metrics', 'redis'],
-    queryFn: () => fetchWithAuth('/api/metrics/redis'),
+    queryFn: () => fetchWithAuth<RedisMetrics>('/api/metrics/redis'),
     refetchInterval: refreshInterval,
     staleTime: 20000,
   });
@@ -102,9 +108,9 @@ export function useRedisMetrics(refreshInterval = 30000) {
  * Hook to fetch queue metrics
  */
 export function useQueueMetrics(refreshInterval = 15000) {
-  return useQuery({
+  return useQuery<QueueMetrics>({
     queryKey: ['metrics', 'queue'],
-    queryFn: () => fetchWithAuth('/api/metrics/queue'),
+    queryFn: () => fetchWithAuth<QueueMetrics>('/api/metrics/queue'),
     refetchInterval: refreshInterval,
     staleTime: 10000,
   });
@@ -114,9 +120,9 @@ export function useQueueMetrics(refreshInterval = 15000) {
  * Hook to fetch API metrics
  */
 export function useApiMetrics(refreshInterval = 30000) {
-  return useQuery({
+  return useQuery<ApiMetrics>({
     queryKey: ['metrics', 'api'],
-    queryFn: () => fetchWithAuth('/api/metrics/api'),
+    queryFn: () => fetchWithAuth<ApiMetrics>('/api/metrics/api'),
     refetchInterval: refreshInterval,
     staleTime: 20000,
   });
@@ -126,9 +132,9 @@ export function useApiMetrics(refreshInterval = 30000) {
  * Hook to fetch resource metrics
  */
 export function useResourceMetrics(refreshInterval = 10000) {
-  return useQuery({
+  return useQuery<ResourceMetrics>({
     queryKey: ['metrics', 'resources'],
-    queryFn: () => fetchWithAuth('/api/metrics/resources'),
+    queryFn: () => fetchWithAuth<ResourceMetrics>('/api/metrics/resources'),
     refetchInterval: refreshInterval,
     staleTime: 5000,
   });
@@ -138,9 +144,9 @@ export function useResourceMetrics(refreshInterval = 10000) {
  * Hook to fetch Gemini metrics
  */
 export function useGeminiMetrics(refreshInterval = 30000) {
-  return useQuery({
+  return useQuery<GeminiMetrics>({
     queryKey: ['metrics', 'gemini'],
-    queryFn: () => fetchWithAuth('/api/metrics/gemini'),
+    queryFn: () => fetchWithAuth<GeminiMetrics>('/api/metrics/gemini'),
     refetchInterval: refreshInterval,
     staleTime: 20000,
   });
