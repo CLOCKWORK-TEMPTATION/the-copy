@@ -177,7 +177,7 @@
   }
 
   body {
-    background-color: hsl(var(--background));
+    /* background-color removed to allow page-specific backgrounds */
     color: hsl(var(--foreground));
   }
 }

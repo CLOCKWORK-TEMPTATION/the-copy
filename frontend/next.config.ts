@@ -118,6 +118,7 @@ const nextConfig = {
               `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com${cdnCsp}`,
               `font-src 'self' https://fonts.gstatic.com${cdnCsp}`,
               `img-src 'self' data: blob: https: https://placehold.co https://images.unsplash.com https://picsum.photos https://www.gstatic.com https://*.googleapis.com${cdnCsp}`,
+              "media-src 'self' https://cdn.pixabay.com blob: data:",
               "connect-src 'self' https://apis.google.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.sentry.io wss: ws:",
               "frame-src 'self' https://apis.google.com https://*.googleapis.com",
               "object-src 'none'",

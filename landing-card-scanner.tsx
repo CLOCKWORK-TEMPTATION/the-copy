@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useEffect, useRef } from "react";
-import * as THREE from "three";
-import { CARDS_11 } from "@/components/carousel/cards.config";
-import images from "@/config/images";
+import { useEffect, useRef } from "react"
+import * as THREE from "three"
+import { CARDS_11 } from "../carousel/cards.config"
+import images from "../../config/images"
 
 export function LandingCardScanner() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -1168,5 +1168,4 @@ export function LandingCardScanner() {
         </div>
       </div>
     </>
-  )
-}
+  )wgp hggd  hggd fk[h,g kwgpi>>> hgtd]d, la ayhg >>> hgid]v la /hiv >> , hgh,ghk

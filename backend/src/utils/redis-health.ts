@@ -2,10 +2,11 @@
  * Redis Health Check Utility
  */
 
-import Redis from 'ioredis';
+import { createClient } from 'redis';
+import type { RedisClientType } from 'redis';
 import { logger } from './logger';
 
-let redisClient: Redis | null = null;
+let redisClient: RedisClientType | null = null;
 
 /**
  * Check if Redis is available
@@ -13,19 +14,19 @@ let redisClient: Redis | null = null;
 export async function checkRedisHealth(): Promise<boolean> {
   try {
     if (!redisClient) {
-      const config: any = {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-        lazyConnect: true,
-        maxRetriesPerRequest: 1,
-        retryStrategy: () => null,
-      };
+      const url = process.env.REDIS_PASSWORD
+        ? `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || '6379'}`
+        : `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || '6379'}`;
       
-      if (process.env.REDIS_PASSWORD) {
-        config.password = process.env.REDIS_PASSWORD;
-      }
+      redisClient = createClient({
+        url,
+        socket: {
+          connectTimeout: 5000,
+          reconnectStrategy: () => false,
+        },
+      });
       
-      redisClient = new Redis(config);
+      await redisClient.connect();
     }
 
     await redisClient.ping();
@@ -33,6 +34,10 @@ export async function checkRedisHealth(): Promise<boolean> {
     return true;
   } catch (error) {
     logger.warn('[Redis] Health check failed:', error);
+    if (redisClient) {
+      await redisClient.disconnect().catch(() => {});
+      redisClient = null;
+    }
     return false;
   }
 }
