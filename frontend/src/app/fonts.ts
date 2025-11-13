@@ -6,71 +6,26 @@
  * Currently using fallback to system fonts until real woff2 files are available.
  */
 
-import localFont from 'next/font/local';
-
-// Arabic serif font - Amiri
-export const amiri = localFont({
-  src: [
-    {
-      path: '../../public/fonts/amiri-400.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-  ],
+// Using system fonts as fallback until proper font files are added
+export const amiri = {
   variable: '--font-amiri',
-  display: 'swap',
-  preload: true,
-  fallback: ['serif'],
-  adjustFontFallback: 'Times New Roman',
-});
+  style: { fontFamily: 'serif' },
+};
 
-// Arabic sans-serif font - Cairo
-export const cairo = localFont({
-  src: [
-    {
-      path: '../../public/fonts/cairo-400.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-  ],
+export const cairo = {
   variable: '--font-cairo',
-  display: 'swap',
-  preload: true,
-  fallback: ['sans-serif'],
-  adjustFontFallback: 'Arial',
-});
+  style: { fontFamily: 'sans-serif' },
+};
 
-// English serif font - Literata
-export const literata = localFont({
-  src: [
-    {
-      path: '../../public/fonts/literata-400.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-  ],
+export const literata = {
   variable: '--font-literata',
-  display: 'swap',
-  preload: true,
-  fallback: ['serif'],
-  adjustFontFallback: 'Times New Roman',
-});
+  style: { fontFamily: 'serif' },
+};
 
-// Monospace font - Source Code Pro
-export const sourceCodePro = localFont({
-  src: [
-    {
-      path: '../../public/fonts/source-code-pro-400.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-  ],
+export const sourceCodePro = {
   variable: '--font-source-code-pro',
-  display: 'swap',
-  preload: true,
-  fallback: ['monospace'],
-  adjustFontFallback: 'Courier New',
-});
+  style: { fontFamily: 'monospace' },
+};
 
 /**
  * To use these fonts in layout.tsx:

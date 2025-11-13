@@ -6,10 +6,14 @@ export const metadata: Metadata = {
   description: "منصة للكتابة الإبداعية والتحليل الدرامي باللغة العربية",
 };
 
-export default function LandingLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <html lang="ar" dir="rtl">
+      <body>{children}</body>
+    </html>
+  );
 }

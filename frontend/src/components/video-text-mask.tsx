@@ -11,26 +11,23 @@ interface VideoTextMaskProps {
 export const VideoTextMask = forwardRef<HTMLDivElement, VideoTextMaskProps>(
   ({ videoSrc, text, className = "" }, ref) => {
     return (
-      <div className={`relative ${className}`}>
+      <div className={`relative ${className} bg-white`}>
         {/* Wrapper للفيديو والماسك معاً - هذا الـ ref للتحريك */}
-        <div ref={ref} className="absolute inset-0 w-full h-full">
-          {/* الفيديو في الخلف - z-index: 1 */}
+        <div ref={ref} className="absolute inset-0 w-full h-full" style={{ isolation: "isolate" }}>
+          {/* الفيديو في الخلف */}
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="absolute top-1/2 left-1/2 w-full h-full min-w-full min-h-full object-cover -translate-x-1/2 -translate-y-1/2"
-            style={{ zIndex: 1 }}
+            className="absolute inset-0 w-full h-full object-cover"
             src={videoSrc}
           />
 
-          {/* الطبقة البيضاء مع النص الأسود - z-index: 2 */}
-          {/* mix-blend-mode: screen يجعل الأبيض شفاف والأسود يخرق الطبقة */}
+          {/* الطبقة البيضاء مع النص الأسود */}
           <div
-            className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white"
+            className="absolute inset-0 flex items-center justify-center bg-white"
             style={{
-              zIndex: 2,
               mixBlendMode: "screen",
             }}
           >
@@ -40,7 +37,7 @@ export const VideoTextMask = forwardRef<HTMLDivElement, VideoTextMaskProps>(
               style={{
                 fontSize: "clamp(8rem, 28vw, 40rem)",
                 fontWeight: 900,
-                color: "black",
+                color: "#000000",
                 fontFamily: "'Tajawal', 'Cairo', 'Noto Kufi Arabic', 'system-ui', '-apple-system', 'Segoe UI', 'Arial Black', sans-serif",
                 letterSpacing: "-0.08em",
                 fontStretch: "ultra-expanded",
@@ -50,9 +47,6 @@ export const VideoTextMask = forwardRef<HTMLDivElement, VideoTextMaskProps>(
             </h1>
           </div>
         </div>
-
-        {/* خلفية سوداء احتياطية */}
-        <div className="absolute inset-0 -z-10 bg-black" />
       </div>
     );
   }
