@@ -20,6 +20,7 @@ export interface SevenStationsResult {
   outputs: StationOutput[];
   fullReport?: string;
   error?: string;
+  errors?: string[];
 }
 
 export const stations: Station[] = [];
@@ -32,15 +33,11 @@ export function registerStation(station: Station): void {
   stations.push(station);
 }
 
-export async function runSevenStations(
-  text: string,
-  metadata?: string
-): Promise<SevenStationsResult> {
-  // Stub implementation - would run actual seven stations analysis
+export async function runSevenStations(text: string, metadata?: string): Promise<SevenStationsResult> {
   return {
     success: true,
     outputs: [],
-    fullReport: 'Analysis report',
+    fullReport: '',
   };
 }
 

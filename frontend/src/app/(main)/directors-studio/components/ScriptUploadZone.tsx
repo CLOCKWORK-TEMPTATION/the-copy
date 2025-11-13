@@ -18,10 +18,10 @@ export default function ScriptUploadZone() {
 
   const handleFile = async (file: File) => {
     try {
-      const project = await createProject.mutateAsync("مشروع جديد");
-      setCurrentProject(project.id);
-      
-      await analyzeScript.mutateAsync({ projectId: project.id, file });
+      const project = await createProject.mutateAsync({ name: "مشروع جديد" }) as { id: string; name: string };
+      setCurrentProject(project as any);
+
+      await analyzeScript.mutateAsync({ projectId: project.id, file } as any);
       
       toast({
         title: "تم التحليل بنجاح!",

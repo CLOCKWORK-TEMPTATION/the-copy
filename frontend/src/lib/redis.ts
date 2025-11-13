@@ -124,63 +124,76 @@ export type { RedisClient as Client };
 export type { RedisService as Service };
 
 /**
- * Generic caching utility with Redis
- * Falls back to direct execution if Redis is not available
+ * Get a cached value by key, with optional factory function
+ * @param key - Cache key
+ * @param factory - Optional factory function to generate value if cache miss
+ * @param ttl - Time to live in seconds (optional, used with factory)
+ * @returns The cached value or factory result
  */
 export async function getCached<T>(
   key: string,
-  factory: () => Promise<T>,
+  factory?: () => Promise<T>,
   ttl?: number
-): Promise<T> {
-  const redis = getRedisClient();
+): Promise<T | null> {
+  const client = getRedisClient();
 
-  // If Redis is not available, just execute the factory
-  if (!redis) {
-    return await factory();
-  }
-
-  try {
-    // Try to get from cache
-    const cached = await redis.get(key);
-    if (cached) {
-      return JSON.parse(cached) as T;
+  // Try to get from cache first
+  if (client) {
+    const value = await client.get(key);
+    if (value) {
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        // Fall through to factory if parse fails
+      }
     }
-
-    // Cache miss - execute factory
-    const result = await factory();
-
-    // Store in cache
-    await redis.set(key, JSON.stringify(result), ttl);
-
-    return result;
-  } catch (error) {
-    console.error('Redis cache error:', error);
-    // On error, fall back to direct execution
-    return await factory();
   }
+
+  // If no factory provided, return null
+  if (!factory) return null;
+
+  // Call factory to generate value
+  const result = await factory();
+
+  // Cache the result if client available
+  if (client && result !== null && result !== undefined) {
+    await client.set(key, JSON.stringify(result), ttl);
+  }
+
+  return result;
 }
 
 /**
- * Invalidate cached data by key or pattern
+ * Set a cached value
+ * @param key - Cache key
+ * @param value - Value to cache
+ * @param ttl - Time to live in seconds (optional)
  */
-export async function invalidateCache(keyOrPattern: string): Promise<void> {
-  const redis = getRedisClient();
+export async function setCached<T>(
+  key: string,
+  value: T,
+  ttl?: number
+): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
 
-  if (!redis) {
-    return;
-  }
+  await client.set(key, JSON.stringify(value), ttl);
+}
 
-  try {
-    if (keyOrPattern.includes('*')) {
-      // Pattern-based invalidation
-      const keys = await redis.keys(keyOrPattern);
-      await Promise.all(keys.map(key => redis.del(key)));
-    } else {
-      // Single key invalidation
-      await redis.del(keyOrPattern);
-    }
-  } catch (error) {
-    console.error('Redis invalidation error:', error);
+/**
+ * Invalidate (delete) a cached value
+ * @param key - Cache key or pattern to invalidate
+ */
+export async function invalidateCache(key: string): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
+
+  // If key contains wildcards, delete all matching keys
+  if (key.includes('*')) {
+    const keys = await client.keys(key);
+    await Promise.all(keys.map((k) => client.del(k)));
+  } else {
+    await client.del(key);
   }
 }
 
@@ -191,5 +204,6 @@ export default {
   getRedisClient,
   defaultRedisConfig,
   getCached,
+  setCached,
   invalidateCache,
 };

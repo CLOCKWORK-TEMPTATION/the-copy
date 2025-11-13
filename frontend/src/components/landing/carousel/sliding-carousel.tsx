@@ -154,11 +154,17 @@ export function SlidingCarousel({
 
   // Touch events
   const handleTouchStart = (e: React.TouchEvent) => {
-    handleDragStart(e.touches[0].clientX);
+    const touch = e.touches[0];
+    if (touch) {
+      handleDragStart(touch.clientX);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    handleDragMove(e.touches[0].clientX);
+    const touch = e.touches[0];
+    if (touch) {
+      handleDragMove(touch.clientX);
+    }
   };
 
   const handleTouchEnd = () => {

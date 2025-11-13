@@ -3,10 +3,11 @@
 
 export interface Project {
   id: string;
-  name: string;
+  title: string;
+  name?: string;
   description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: string | Date;
+  updatedAt?: string | Date;
 }
 
 export interface ProjectStore {

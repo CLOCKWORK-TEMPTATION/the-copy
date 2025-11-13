@@ -185,9 +185,21 @@ export function EditorPage() {
               {scenes.map((scene) => (
                 <SceneCard
                   key={scene.id}
-                  {...scene}
+                  scene={{
+                    id: scene.id,
+                    title: scene.title,
+                    beats: scene.beats,
+                    duration: scene.duration,
+                    status: scene.status,
+                  }}
+                  connections={{
+                    linksIn: scene.linksIn,
+                    linksOut: scene.linksOut,
+                  }}
+                  display={{
+                    isFocused: focusedScene === scene.id,
+                  }}
                   onClick={() => handleSceneClick(scene.id)}
-                  isFocused={focusedScene === scene.id}
                 />
               ))}
             </div>

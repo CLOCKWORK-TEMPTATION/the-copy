@@ -103,14 +103,16 @@ export default function SceneFormDialog({
       } else {
         await createScene.mutateAsync({
           projectId,
-          sceneNumber: formData.sceneNumber,
-          title: formData.title,
-          location: formData.location,
-          timeOfDay: formData.timeOfDay,
-          description: formData.description,
-          characters: charactersArray,
-          shotCount: 0,
-          status: formData.status
+          data: {
+            sceneNumber: formData.sceneNumber,
+            title: formData.title,
+            location: formData.location,
+            timeOfDay: formData.timeOfDay,
+            description: formData.description,
+            characters: charactersArray,
+            shotCount: 0,
+            status: formData.status
+          }
         });
         
         toast({

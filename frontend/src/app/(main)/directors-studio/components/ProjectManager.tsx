@@ -40,8 +40,8 @@ export default function ProjectManager() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
-  const handleSelectProject = (id: string) => {
-    setCurrentProject(id);
+  const handleSelectProject = (project: any) => {
+    setCurrentProject(project);
     window.location.reload();
   };
 
@@ -79,7 +79,7 @@ export default function ProjectManager() {
     try {
       await deleteProject.mutateAsync(projectToDelete);
 
-      if (currentProjectId === projectToDelete) {
+      if (currentProjectId && currentProjectId.id === projectToDelete) {
         clearCurrentProject();
         window.location.reload();
       }
@@ -104,7 +104,9 @@ export default function ProjectManager() {
     return <Skeleton className="h-64 w-full" />;
   }
 
-  if (!projects || projects.length === 0) {
+  const projectsList = Array.isArray(projects) ? projects : [];
+
+  if (!projectsList || projectsList.length === 0) {
     return null;
   }
 
@@ -114,7 +116,7 @@ export default function ProjectManager() {
         <DialogTrigger asChild>
           <Button variant="outline" data-testid="button-manage-projects">
             <FolderOpen className="w-4 h-4 ml-2" />
-            إدارة المشاريع ({projects.length})
+            إدارة المشاريع ({projectsList.length})
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-2xl" dir="rtl">
@@ -122,10 +124,10 @@ export default function ProjectManager() {
             <DialogTitle className="text-right">المشاريع المتاحة</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
-            {projects.map((project) => (
-              <Card 
+            {projectsList.map((project: any) => (
+              <Card
                 key={project.id}
-                className={currentProjectId === project.id ? "border-primary" : ""}
+                className={currentProjectId && currentProjectId.id === project.id ? "border-primary" : ""}
                 data-testid={`card-project-${project.id}`}
               >
                 <CardContent className="p-4">
@@ -146,7 +148,7 @@ export default function ProjectManager() {
                         </p>
                       </div>
                     )}
-                    
+
                     <div className="flex gap-2">
                       {editingId === project.id ? (
                         <Button
@@ -176,16 +178,16 @@ export default function ProjectManager() {
                           >
                             <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
-                          {currentProjectId !== project.id && (
+                          {(!currentProjectId || currentProjectId.id !== project.id) && (
                             <Button
                               variant="outline"
-                              onClick={() => handleSelectProject(project.id)}
+                              onClick={() => handleSelectProject(project)}
                               data-testid={`button-select-${project.id}`}
                             >
                               اختيار
                             </Button>
                           )}
-                          {currentProjectId === project.id && (
+                          {currentProjectId && currentProjectId.id === project.id && (
                             <Button variant="default" disabled data-testid="button-current-project">
                               المشروع الحالي
                             </Button>

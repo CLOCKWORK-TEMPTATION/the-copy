@@ -35,7 +35,7 @@ export function useProjectCharacters(projectId: string | undefined) {
 
 export function useCreateCharacter() {
   return useMutation({
-    mutationFn: (character: any) => api.createCharacter(character),
+    mutationFn: ({ projectId, data }: { projectId: string; data: any }) => api.createCharacter(projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "characters"] });
     },
@@ -66,7 +66,7 @@ export function useDeleteCharacter() {
 
 export function useCreateProject() {
   return useMutation({
-    mutationFn: (title: string) => api.createProject(title),
+    mutationFn: (data: { name: string; description?: string }) => api.createProject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
     },
@@ -94,8 +94,11 @@ export function useDeleteProject() {
 
 export function useAnalyzeScript() {
   return useMutation({
-    mutationFn: ({ projectId, file }: { projectId: string; file: File }) =>
-      api.analyzeScript(projectId, file),
+    mutationFn: async ({ projectId, file }: { projectId: string; file: File }) => {
+      // Convert File to text
+      const scriptText = await file.text();
+      return api.analyzeScript(projectId, scriptText);
+    },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
@@ -106,7 +109,7 @@ export function useAnalyzeScript() {
 
 export function useCreateScene() {
   return useMutation({
-    mutationFn: (scene: any) => api.createScene(scene),
+    mutationFn: ({ projectId, data }: { projectId: string; data: any }) => api.createScene(projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
     },
@@ -135,17 +138,17 @@ export function useDeleteScene() {
   });
 }
 
-export function useSceneShots(sceneId: string | undefined) {
+export function useSceneShots(projectId: string | undefined, sceneId: string | undefined) {
   return useQuery({
     queryKey: ["/api/scenes", sceneId, "shots"],
-    queryFn: () => api.getSceneShots(sceneId!),
-    enabled: !!sceneId,
+    queryFn: () => api.getSceneShots(projectId!, sceneId!),
+    enabled: !!projectId && !!sceneId,
   });
 }
 
 export function useCreateShot() {
   return useMutation({
-    mutationFn: (shot: any) => api.createShot(shot),
+    mutationFn: ({ sceneId, data }: { sceneId: string; data: any }) => api.createShot(sceneId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scenes", variables.sceneId, "shots"] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });

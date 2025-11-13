@@ -17,29 +17,8 @@ export default {
   future: {
     hoverOnlyWhenSupported: true,
   },
-  // Safelist for dynamic classes that might be missed by purging
-  safelist: [
-    // Dynamic color classes that might be generated programmatically
-    {
-      pattern:
-        /^(bg|text|border)-(primary|secondary|accent|destructive|muted|card|popover|chart)-?(foreground|1|2|3|4|5)?$/,
-      variants: ["hover", "focus", "active", "dark"],
-    },
-    // Dynamic sizing classes
-    {
-      pattern: /^(w|h|p|m|gap)-(0|1|2|3|4|5|6|8|10|12|16|20|24|32|48|64)$/,
-    },
-    // Animation classes that might be applied dynamically
-    "animate-spin",
-    "animate-pulse",
-    "animate-bounce",
-    "animate-accordion-down",
-    "animate-accordion-up",
-    // Icon sizing classes
-    {
-      pattern: /^(w|h)-(4|5|6|8|10|12|16)$/,
-    },
-  ],
+  // Note: safelist is no longer part of Config type in Tailwind v4
+  // Dynamic classes should be included in content paths or use @apply
   theme: {
     extend: {
       fontFamily: {

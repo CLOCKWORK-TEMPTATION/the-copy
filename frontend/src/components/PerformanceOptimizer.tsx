@@ -12,6 +12,17 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
+// Extend Window interface for TypeScript
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set' | 'get',
+      targetId: string,
+      config?: Record<string, any>
+    ) => void;
+  }
+}
+
 /**
  * Track page views and performance metrics
  */
@@ -73,6 +84,8 @@ export function PerformanceOptimizer() {
         imageObserver.disconnect();
       };
     }
+
+    return undefined;
   }, [pathname]);
 
   return null;
@@ -97,17 +110,6 @@ export function PreloadResources() {
       <link rel="prefetch" href="/api/health" />
     </>
   );
-}
-
-// Extend Window interface for TypeScript
-declare global {
-  interface Window {
-    gtag?: (
-      command: 'event' | 'config' | 'set' | 'get',
-      targetId: string,
-      config?: Record<string, any>
-    ) => void;
-  }
 }
 
 export default PerformanceOptimizer;
