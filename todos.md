@@ -35,7 +35,7 @@
   - [x] `useProject.ts` - أصلحت mutation signatures
   - [x] `useAI.ts` - أصلحت function signatures
   - [ ] `ProjectManager.tsx` - يحتاج إصلاح (~10 أخطاء)
-  - [ ] `API routes` - يحتاج إصلاح (~5 أخطاء)
+  - [x] `API routes` - تم الإصلاح (أضيفت getCached و invalidateCache إلى redis.ts، أصلحت توقيع runSevenStations، أضيفت type annotations)
 - [x] إضافة type annotations للمتغيرات ذات النوع `any` الضمني (جزئياً)
 - [x] إضافة null checks وoptional chaining للمتغيرات التي قد تكون `undefined` (جزئياً)
 - [x] إضافة override modifiers (2 من 5 حالات)

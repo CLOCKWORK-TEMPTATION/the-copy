@@ -8,10 +8,18 @@ export interface Station {
   processor?: (input: any) => Promise<any>;
 }
 
+export interface StationOutput {
+  stationId: string;
+  stationName: string;
+  textOutput: string;
+  success: boolean;
+}
+
 export interface SevenStationsResult {
   success: boolean;
-  stations: any[];
-  errors?: string[];
+  outputs: StationOutput[];
+  fullReport?: string;
+  error?: string;
 }
 
 export const stations: Station[] = [];
@@ -24,10 +32,15 @@ export function registerStation(station: Station): void {
   stations.push(station);
 }
 
-export async function runSevenStations(input: any): Promise<SevenStationsResult> {
+export async function runSevenStations(
+  text: string,
+  metadata?: string
+): Promise<SevenStationsResult> {
+  // Stub implementation - would run actual seven stations analysis
   return {
     success: true,
-    stations: [],
+    outputs: [],
+    fullReport: 'Analysis report',
   };
 }
 
