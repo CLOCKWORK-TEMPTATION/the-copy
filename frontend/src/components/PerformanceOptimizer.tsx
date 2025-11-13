@@ -102,7 +102,11 @@ export function PreloadResources() {
 // Extend Window interface for TypeScript
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (
+      command: 'event' | 'config' | 'set' | 'get',
+      targetId: string,
+      config?: Record<string, any>
+    ) => void;
   }
 }
 

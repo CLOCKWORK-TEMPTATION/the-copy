@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { reportWebVitals } from "@/lib/web-vitals";
+import { initializeWebVitals } from "@/lib/web-vitals";
 
 /**
  * Web Vitals Reporter Component
@@ -18,7 +18,7 @@ import { reportWebVitals } from "@/lib/web-vitals";
 export default function WebVitalsReporter() {
   useEffect(() => {
     // Initialize Web Vitals reporting on mount
-    reportWebVitals();
+    initializeWebVitals();
 
     if (process.env.NODE_ENV === "development") {
       console.log("[WebVitalsReporter] Web Vitals tracking initialized");
