@@ -56,11 +56,13 @@ const nextConfig = {
   allowedDevOrigins: ["*.replit.dev", "replit.dev"],
 
   eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV === "production",
+    // Do not ignore build errors in production
+    ignoreDuringBuilds: false,
   },
 
   typescript: {
-    ignoreBuildErrors: true,
+    // Enable TypeScript build errors - critical for production
+    ignoreBuildErrors: false,
   },
 
   // Performance optimizations

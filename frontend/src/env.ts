@@ -24,6 +24,9 @@ const serverSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test", "staging"])
     .default("development"),
+
+  // JWT Secret for authentication
+  JWT_SECRET: z.string().default("development-jwt-secret"),
 });
 
 // Client-side safe environment variables (prefixed with NEXT_PUBLIC_)
@@ -35,6 +38,9 @@ const clientSchema = z.object({
 
   // Sentry client configuration
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
+
+  // Gemini API Key for client-side (if needed)
+  NEXT_PUBLIC_GEMINI_API_KEY: z.string().optional(),
 });
 
 /**

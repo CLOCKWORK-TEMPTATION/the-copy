@@ -1,130 +1,145 @@
-// Stub file created by Worktree-5 to resolve type errors
-// This module was referenced but missing from the codebase
+// Environment variables are accessed via process.env
 
-export interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+async function request<T>(
+  endpoint: string,
+  method: RequestMethod = 'GET',
+  body?: any,
+  headers: Record<string, string> = {}
+): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+  
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+  };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  try {
+    const response = await fetch(url, options);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`API request failed: ${method} ${endpoint}`, error);
+    throw error;
+  }
 }
 
-export interface ApiResponse<T = any> {
-  data?: T;
-  error?: string;
-  success: boolean;
+// Project API functions
+export async function fetchProjects() {
+  return request('/api/projects');
 }
 
-export async function fetchProjects(): Promise<ApiResponse<Project[]>> {
-  return { success: true, data: [] };
+export async function getProjectScenes(projectId: string) {
+  return request(`/api/projects/${projectId}/scenes`);
 }
 
-export async function fetchProject(id: string): Promise<ApiResponse<Project>> {
-  return { success: true, data: { id, name: 'Project' } };
+export async function getSceneShots(projectId: string, sceneId: string) {
+  return request(`/api/projects/${projectId}/scenes/${sceneId}/shots`);
 }
 
-export async function createProject(data: Partial<Project>): Promise<ApiResponse<Project>> {
-  return { success: true, data: { id: '1', name: data.name || 'New Project' } };
+export async function analyzeScript(projectId: string, scriptText: string) {
+  return request(`/api/projects/${projectId}/analyze`, 'POST', { scriptText });
 }
 
-export async function updateProject(id: string, data: Partial<Project>): Promise<ApiResponse<Project>> {
-  return { success: true, data: { id, name: data.name || 'Updated Project' } };
+export async function getShotSuggestion(projectId: string, sceneId: string, shotType: string) {
+  return request(`/api/projects/${projectId}/scenes/${sceneId}/suggestions`, 'POST', { shotType });
 }
 
-export async function deleteProject(id: string): Promise<ApiResponse<void>> {
-  return { success: true };
+export async function chatWithAI(message: string, context?: any) {
+  return request('/api/ai/chat', 'POST', { message, context });
+}
+
+// Additional project functions that are missing
+export async function fetchProject(id: string) {
+  return request(`/api/projects/${id}`);
+}
+
+export async function createProject(data: any) {
+  return request('/api/projects', 'POST', data);
+}
+
+export async function updateProject(id: string, data: any) {
+  return request(`/api/projects/${id}`, 'PUT', data);
+}
+
+export async function deleteProject(id: string) {
+  return request(`/api/projects/${id}`, 'DELETE');
+}
+
+// Character functions
+export async function getProjectCharacters(projectId: string) {
+  return request(`/api/projects/${projectId}/characters`);
+}
+
+export async function createCharacter(projectId: string, data: any) {
+  return request(`/api/projects/${projectId}/characters`, 'POST', data);
+}
+
+export async function updateCharacter(id: string, data: any) {
+  return request(`/api/characters/${id}`, 'PUT', data);
+}
+
+export async function deleteCharacter(id: string) {
+  return request(`/api/characters/${id}`, 'DELETE');
+}
+
+// Scene functions
+export async function createScene(projectId: string, data: any) {
+  return request(`/api/projects/${projectId}/scenes`, 'POST', data);
+}
+
+export async function updateScene(id: string, data: any) {
+  return request(`/api/scenes/${id}`, 'PUT', data);
+}
+
+export async function deleteScene(id: string) {
+  return request(`/api/scenes/${id}`, 'DELETE');
+}
+
+// Shot functions
+export async function createShot(sceneId: string, data: any) {
+  return request(`/api/scenes/${sceneId}/shots`, 'POST', data);
+}
+
+export async function updateShot(id: string, data: any) {
+  return request(`/api/shots/${id}`, 'PUT', data);
+}
+
+export async function deleteShot(id: string) {
+  return request(`/api/shots/${id}`, 'DELETE');
 }
 
 // Alias functions for compatibility
 export const getProjects = fetchProjects;
 export const getProject = fetchProject;
+export const createProjectAlias = createProject;
+export const updateProjectAlias = updateProject;
+export const deleteProjectAlias = deleteProject;
+export const getProjectCharactersAlias = getProjectCharacters;
+export const createCharacterAlias = createCharacter;
+export const updateCharacterAlias = updateCharacter;
+export const deleteCharacterAlias = deleteCharacter;
+export const createSceneAlias = createScene;
+export const updateSceneAlias = updateScene;
+export const deleteSceneAlias = deleteScene;
+export const createShotAlias = createShot;
+export const updateShotAlias = updateShot;
+export const deleteShotAlias = deleteShot;
 
-// Scene management
-export async function getProjectScenes(projectId: string): Promise<ApiResponse<any[]>> {
-  return { success: true, data: [] };
-}
-
-export async function createScene(projectId: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function updateScene(id: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function deleteScene(id: string): Promise<ApiResponse<void>> {
-  return { success: true };
-}
-
-// Character management
-export async function getProjectCharacters(projectId: string): Promise<ApiResponse<any[]>> {
-  return { success: true, data: [] };
-}
-
-export async function createCharacter(projectId: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function updateCharacter(id: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function deleteCharacter(id: string): Promise<ApiResponse<void>> {
-  return { success: true };
-}
-
-// Shot management
-export async function getSceneShots(sceneId: string): Promise<ApiResponse<any[]>> {
-  return { success: true, data: [] };
-}
-
-export async function createShot(sceneId: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function updateShot(id: string, data: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export async function deleteShot(id: string): Promise<ApiResponse<void>> {
-  return { success: true };
-}
-
-// Script analysis
-export async function analyzeScript(projectId: string, script: string): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-// AI features
-export async function chatWithAI(message: string, context?: any): Promise<ApiResponse<string>> {
-  return { success: true, data: '' };
-}
-
-export async function getShotSuggestion(scene: any): Promise<ApiResponse<any>> {
-  return { success: true, data: {} };
-}
-
-export default {
-  fetchProjects,
-  fetchProject,
-  createProject,
-  updateProject,
-  deleteProject,
-  getProjects,
-  getProject,
-  getProjectScenes,
-  createScene,
-  updateScene,
-  deleteScene,
-  getProjectCharacters,
-  createCharacter,
-  updateCharacter,
-  deleteCharacter,
-  getSceneShots,
-  createShot,
-  updateShot,
-  deleteShot,
-  analyzeScript,
-  chatWithAI,
-  getShotSuggestion,
-};
+// Export the request function for custom API calls
+export { request };

@@ -1,44 +1,56 @@
-// Stub file created by Worktree-5 to resolve type errors
-// This module was referenced but missing from the codebase
+/**
+ * Gemini Core Module
+ * Provides core functionality for Google Gemini AI integration
+ */
 
 export interface GeminiConfig {
-  apiKey?: string;
+  apiKey: string;
   model?: string;
+  temperature?: number;
+  maxTokens?: number;
 }
 
-export interface GeminiResponse {
-  text: string;
-  usage?: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
+export interface GeminiModel {
+  generateContent(prompt: string): Promise<string>;
+  generateContentStream(prompt: string): AsyncIterableIterator<string>;
 }
 
-export async function generateText(prompt: string, config?: GeminiConfig): Promise<GeminiResponse> {
-  return {
-    text: '',
-    usage: {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
-    },
-  };
-}
+export class GeminiCore implements GeminiModel {
+  private config: GeminiConfig;
 
-export async function generateStream(prompt: string, config?: GeminiConfig): Promise<ReadableStream> {
-  return new ReadableStream();
-}
-
-export function toText(response: GeminiResponse | string): string {
-  if (typeof response === 'string') {
-    return response;
+  constructor(config: GeminiConfig) {
+    this.config = {
+      model: 'gemini-pro',
+      temperature: 0.7,
+      maxTokens: 2048,
+      ...config,
+    };
   }
-  return response.text;
+
+  async generateContent(prompt: string): Promise<string> {
+    // Implementation would use the actual Gemini API
+    // This is a stub for now
+    return `Generated content for: ${prompt}`;
+  }
+
+  async* generateContentStream(prompt: string): AsyncIterableIterator<string> {
+    // Implementation would use the actual Gemini API with streaming
+    // This is a stub for now
+    yield `Streaming content for: ${prompt}`;
+  }
 }
 
-export default {
-  generateText,
-  generateStream,
-  toText,
-};
+// Export utility functions
+export function toText(response: any): string {
+  if (typeof response === 'string') return response;
+  if (response?.text) return response.text;
+  if (response?.content) return response.content;
+  return JSON.stringify(response);
+}
+
+export function createGeminiCore(config: GeminiConfig): GeminiCore {
+  return new GeminiCore(config);
+}
+
+// Default export
+export default GeminiCore;
