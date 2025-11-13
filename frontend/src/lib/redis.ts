@@ -123,10 +123,87 @@ export type { RedisConfig as Config };
 export type { RedisClient as Client };
 export type { RedisService as Service };
 
+/**
+ * Get a cached value by key, with optional factory function
+ * @param key - Cache key
+ * @param factory - Optional factory function to generate value if cache miss
+ * @param ttl - Time to live in seconds (optional, used with factory)
+ * @returns The cached value or factory result
+ */
+export async function getCached<T>(
+  key: string,
+  factory?: () => Promise<T>,
+  ttl?: number
+): Promise<T | null> {
+  const client = getRedisClient();
+
+  // Try to get from cache first
+  if (client) {
+    const value = await client.get(key);
+    if (value) {
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        // Fall through to factory if parse fails
+      }
+    }
+  }
+
+  // If no factory provided, return null
+  if (!factory) return null;
+
+  // Call factory to generate value
+  const result = await factory();
+
+  // Cache the result if client available
+  if (client && result !== null && result !== undefined) {
+    await client.set(key, JSON.stringify(result), ttl);
+  }
+
+  return result;
+}
+
+/**
+ * Set a cached value
+ * @param key - Cache key
+ * @param value - Value to cache
+ * @param ttl - Time to live in seconds (optional)
+ */
+export async function setCached<T>(
+  key: string,
+  value: T,
+  ttl?: number
+): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
+
+  await client.set(key, JSON.stringify(value), ttl);
+}
+
+/**
+ * Invalidate (delete) a cached value
+ * @param key - Cache key or pattern to invalidate
+ */
+export async function invalidateCache(key: string): Promise<void> {
+  const client = getRedisClient();
+  if (!client) return;
+
+  // If key contains wildcards, delete all matching keys
+  if (key.includes('*')) {
+    const keys = await client.keys(key);
+    await Promise.all(keys.map((k) => client.del(k)));
+  } else {
+    await client.del(key);
+  }
+}
+
 // Default export
 export default {
   RedisService,
   createRedisClient,
   getRedisClient,
   defaultRedisConfig,
+  getCached,
+  setCached,
+  invalidateCache,
 };

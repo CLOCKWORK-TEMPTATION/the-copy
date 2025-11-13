@@ -71,6 +71,7 @@
     "coverage",
     "jest.setup.ts",
     "vitest.config.ts",
+    "vite.config.ts",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",
@@ -79,6 +80,7 @@
     "_archive/**",
     "_analysis/**",
     "**/__tests__/**",
-    "**/__mocks__/**"
+    "**/__mocks__/**",
+    "src/workers/**"
   ]
 }

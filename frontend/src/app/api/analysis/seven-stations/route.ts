@@ -77,6 +77,17 @@ export async function POST(request: NextRequest) {
 
     const executionTime = Date.now() - startTime;
 
+    if (!result) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "فشل في الحصول على نتائج التحليل",
+          executionTime,
+        },
+        { status: 500 }
+      );
+    }
+
     if (result.success) {
       return NextResponse.json({
         success: true,

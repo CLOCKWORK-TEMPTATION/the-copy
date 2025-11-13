@@ -74,7 +74,7 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
         shotType,
         cameraAngle,
       });
-      setAiSuggestion(result);
+      setAiSuggestion(result as { suggestion: string; reasoning: string });
     } catch (error) {
       console.error("Failed to get suggestion:", error);
     }

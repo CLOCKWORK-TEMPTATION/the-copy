@@ -90,11 +90,15 @@ export function LandingCardScanner() {
 
         this.cardLine.addEventListener("touchstart", (e) => {
           const touch = e.touches[0];
-          if (touch) this.startDrag(touch);
+          if (touch) {
+            this.startDrag(touch);
+          }
         }, { passive: false });
         document.addEventListener("touchmove", (e) => {
           const touch = e.touches[0];
-          if (touch) this.onDrag(touch);
+          if (touch) {
+            this.onDrag(touch);
+          }
         }, { passive: false });
         document.addEventListener("touchend", () => this.endDrag())
 
@@ -204,7 +208,10 @@ export function LandingCardScanner() {
 
       generateCode(width: number, height: number): string {
         const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
-        const pick = (arr: string[]) => arr[randInt(0, arr.length - 1)]
+        const pick = (arr: string[]) => {
+          const item = arr[randInt(0, arr.length - 1)];
+          return item ?? '';
+        }
 
         const header = [
           "// النسخة: تحويل الأفكار إلى واقع",
@@ -252,7 +259,7 @@ export function LandingCardScanner() {
         return { width, height, fontSize, lineHeight }
       }
 
-      createCardWrapper(card: typeof CARDS_11[0], imageIndex: number): HTMLDivElement {
+      createCardWrapper(card: (typeof CARDS_11)[number], imageIndex: number): HTMLDivElement {
         const wrapper = document.createElement("div")
         wrapper.className = "card-wrapper"
         wrapper.setAttribute("data-link", card.href)
@@ -268,7 +275,8 @@ export function LandingCardScanner() {
 
         const cardImage = document.createElement("img")
         cardImage.className = "card-image"
-        cardImage.src = images[imageIndex] ?? images[0] ?? ''
+        const imageSrc = images[imageIndex] ?? images[0]
+        cardImage.src = imageSrc ?? ''
         cardImage.alt = card.title
         cardImage.loading = "lazy"
         cardImage.decoding = "async"
@@ -535,32 +543,51 @@ export function LandingCardScanner() {
         requestAnimationFrame(() => this.animate())
 
         if (this.particles) {
-          const positions = this.particles.geometry.attributes.position.array as Float32Array
-          const alphas = this.particles.geometry.attributes.alpha.array as Float32Array
+          const positionAttr = this.particles.geometry.attributes.position;
+          const alphaAttr = this.particles.geometry.attributes.alpha;
+
+          if (!positionAttr || !alphaAttr) return;
+
+          const positions = positionAttr.array as Float32Array
+          const alphas = alphaAttr.array as Float32Array
           const time = Date.now() * 0.001
 
           for (let i = 0; i < this.particleCount; i++) {
-            positions[i * 3] += this.velocities[i] * 0.016
+            const velocity = this.velocities[i];
+            const posX = positions[i * 3];
+            const posY = positions[i * 3 + 1];
 
-            if (positions[i * 3] > window.innerWidth / 2 + 100) {
+            if (velocity !== undefined && posX !== undefined) {
+              positions[i * 3] = posX + velocity * 0.016
+            }
+
+            const currentPosX = positions[i * 3];
+            if (currentPosX !== undefined && currentPosX > window.innerWidth / 2 + 100) {
               positions[i * 3] = -window.innerWidth / 2 - 100
               positions[i * 3 + 1] = (Math.random() - 0.5) * 250
             }
 
-            positions[i * 3 + 1] += Math.sin(time + i * 0.1) * 0.5
-
-            const twinkle = Math.floor(Math.random() * 10)
-            if (twinkle === 1 && alphas[i] > 0) {
-              alphas[i] -= 0.05
-            } else if (twinkle === 2 && alphas[i] < 1) {
-              alphas[i] += 0.05
+            const currentPosY = positions[i * 3 + 1];
+            if (currentPosY !== undefined) {
+              positions[i * 3 + 1] = currentPosY + Math.sin(time + i * 0.1) * 0.5
             }
 
-            alphas[i] = Math.max(0, Math.min(1, alphas[i]))
+            const twinkle = Math.floor(Math.random() * 10)
+            const currentAlpha = alphas[i];
+            if (currentAlpha !== undefined) {
+              let newAlpha = currentAlpha;
+              if (twinkle === 1 && currentAlpha > 0) {
+                newAlpha = currentAlpha - 0.05
+              } else if (twinkle === 2 && currentAlpha < 1) {
+                newAlpha = currentAlpha + 0.05
+              }
+
+              alphas[i] = Math.max(0, Math.min(1, newAlpha))
+            }
           }
 
-          this.particles.geometry.attributes.position.needsUpdate = true
-          this.particles.geometry.attributes.alpha.needsUpdate = true
+          positionAttr.needsUpdate = true
+          alphaAttr.needsUpdate = true
         }
 
         this.renderer.render(this.scene, this.camera)

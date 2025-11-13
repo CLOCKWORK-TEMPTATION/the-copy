@@ -22,13 +22,13 @@ const ProjectContent = dynamic(() => import("./components/ProjectContent").then(
 });
 
 export default function DirectorsStudioPage() {
-  const currentProjectId = getCurrentProject();
-  const activeProjectKey = currentProjectId ?? undefined;
+  const currentProject = getCurrentProject();
+  const activeProjectKey = currentProject?.id ?? undefined;
   const { data: scenes, isLoading: scenesLoading } = useProjectScenes(activeProjectKey);
   const { data: characters, isLoading: charactersLoading } = useProjectCharacters(activeProjectKey);
 
   const isLoading = [scenesLoading, charactersLoading].some(Boolean);
-  const scenesList: SceneCardProps[] = scenes ?? [];
+  const scenesList: SceneCardProps[] = Array.isArray(scenes) ? scenes : [];
   const charactersList: CharacterTrackerProps["characters"] = prepareCharacterList(
     characters as ProjectCharacterInput | undefined,
   );
@@ -41,7 +41,7 @@ export default function DirectorsStudioPage() {
     );
   }
 
-  if (!hasActiveProject(currentProjectId, scenesList)) {
+  if (!hasActiveProject(activeProjectKey ?? null, scenesList)) {
     return (
       <PageLayout>
         <NoProjectSection />

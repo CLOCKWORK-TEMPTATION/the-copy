@@ -73,6 +73,8 @@ export function PerformanceOptimizer() {
         imageObserver.disconnect();
       };
     }
+
+    return undefined;
   }, [pathname]);
 
   return null;
@@ -97,13 +99,6 @@ export function PreloadResources() {
       <link rel="prefetch" href="/api/health" />
     </>
   );
-}
-
-// Extend Window interface for TypeScript
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
 }
 
 export default PerformanceOptimizer;

@@ -62,7 +62,7 @@ const TASK_CATEGORY_ICONS: Record<TaskCategory, React.ReactNode> = {
  */
 export function getTaskIcon(
   taskType: TaskType,
-  taskCategoryMap: Record<TaskType, TaskCategory>
+  taskCategoryMap: Partial<Record<TaskType, TaskCategory>>
 ): React.ReactNode {
   // First, try to get icon by specific task type
   const taskIcon = TASK_TYPE_ICONS[taskType];
