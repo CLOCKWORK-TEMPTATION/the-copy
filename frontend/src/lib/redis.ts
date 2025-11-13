@@ -30,11 +30,11 @@ export class RedisService implements RedisClient {
 
   constructor(config: RedisConfig) {
     this.config = {
-      host: 'localhost',
-      port: 6379,
       db: 0,
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
+      host: 'localhost',
+      port: 6379,
       ...config,
     };
   }
@@ -111,7 +111,7 @@ export function getRedisClient(): RedisService | null {
 export const defaultRedisConfig: RedisConfig = {
   host: process.env.REDIS_HOST || 'localhost',
   port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
+  password: process.env.REDIS_PASSWORD || undefined,
   db: parseInt(process.env.REDIS_DB || '0'),
   keyPrefix: process.env.REDIS_KEY_PREFIX || 'app:',
   maxRetriesPerRequest: 3,

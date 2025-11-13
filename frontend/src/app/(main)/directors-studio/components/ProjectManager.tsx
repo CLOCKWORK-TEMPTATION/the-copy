@@ -58,10 +58,11 @@ export default function ProjectManager() {
         title: "تم التحديث",
         description: "تم تحديث عنوان المشروع بنجاح",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "فشل تحديث المشروع";
       toast({
         title: "حدث خطأ",
-        description: "فشل تحديث المشروع",
+        description: message,
         variant: "destructive",
       });
     }
@@ -89,10 +90,11 @@ export default function ProjectManager() {
       });
       setDeleteDialogOpen(false);
       setProjectToDelete(null);
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "فشل حذف المشروع";
       toast({
         title: "حدث خطأ",
-        description: "فشل حذف المشروع",
+        description: message,
         variant: "destructive",
       });
     }
@@ -146,7 +148,7 @@ export default function ProjectManager() {
                         </p>
                       </div>
                     )}
-                    
+
                     <div className="flex gap-2">
                       {editingId === project.id ? (
                         <Button

@@ -1,3 +1,19 @@
+// Enums
+export enum ShotType {
+  WIDE = 'wide',
+  MEDIUM = 'medium',
+  CLOSE_UP = 'close-up',
+  EXTREME_CLOSE_UP = 'extreme-close-up',
+}
+
+export enum RequestMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
+}
+
 // API Response Types
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -9,16 +25,22 @@ export interface ApiResponse<T = any> {
 // Project Types
 export interface Project {
   id: string;
-  name: string;
-  description?: string;
+  title: string;
+  scriptContent?: string;
+  userId?: string;
   createdAt: string;
   updatedAt: string;
   scenes?: Scene[];
 }
 
 export interface CreateProjectRequest {
-  name: string;
-  description?: string;
+  title: string;
+  scriptContent?: string;
+}
+
+export interface UpdateProjectRequest {
+  title?: string;
+  scriptContent?: string;
 }
 
 // Scene Types
@@ -39,13 +61,19 @@ export interface CreateSceneRequest {
   script?: string;
 }
 
+export interface UpdateSceneRequest {
+  title?: string;
+  description?: string;
+  script?: string;
+}
+
 // Shot Types
 export interface Shot {
   id: string;
   sceneId: string;
   title: string;
   description?: string;
-  type: 'wide' | 'medium' | 'close-up' | 'extreme-close-up';
+  type: ShotType;
   duration?: number;
   order?: number;
   createdAt: string;
@@ -55,9 +83,40 @@ export interface Shot {
 export interface CreateShotRequest {
   title: string;
   description?: string;
-  type: 'wide' | 'medium' | 'close-up' | 'extreme-close-up';
+  type: ShotType;
   duration?: number;
   order?: number;
+}
+
+export interface UpdateShotRequest {
+  title?: string;
+  description?: string;
+  type?: ShotType;
+  duration?: number;
+  order?: number;
+}
+
+// Character Types
+export interface Character {
+  id: string;
+  projectId: string;
+  name: string;
+  description?: string;
+  role?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCharacterRequest {
+  name: string;
+  description?: string;
+  role?: string;
+}
+
+export interface UpdateCharacterRequest {
+  name?: string;
+  description?: string;
+  role?: string;
 }
 
 // AI Analysis Types

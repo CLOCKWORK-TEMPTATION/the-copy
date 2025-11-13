@@ -12,6 +12,17 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
+// Extend Window interface for TypeScript
+declare global {
+  interface Window {
+    gtag?: (
+      command: 'event' | 'config' | 'set' | 'get',
+      targetId: string,
+      config?: Record<string, any>
+    ) => void;
+  }
+}
+
 /**
  * Track page views and performance metrics
  */

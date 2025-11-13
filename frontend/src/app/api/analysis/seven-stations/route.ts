@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { runSevenStations } from "@/lib/ai/stations";
+import { runSevenStations, StationOutput } from "@/lib/ai/stations";
 import { runPipelineWithInterfaces } from "@/lib/ai/pipeline-orchestrator";
 import { getCached, invalidateCache } from "@/lib/redis";
 import crypto from "crypto";
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         report: result.fullReport,
-        stations: result.outputs.map((output) => ({
+        stations: result.outputs.map((output: StationOutput) => ({
           id: output.stationId,
           name: output.stationName,
           summary: output.textOutput.substring(0, 200) + "...",
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: result.error || "فشل التحليل",
-          stations: result.outputs.map((output) => ({
+          stations: result.outputs.map((output: StationOutput) => ({
             id: output.stationId,
             name: output.stationName,
             summary: output.textOutput || "فشل في إكمال هذه المحطة",
