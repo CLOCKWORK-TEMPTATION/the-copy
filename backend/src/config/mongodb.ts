@@ -7,7 +7,14 @@
 import { MongoClient, ServerApiVersion, Db } from 'mongodb';
 import { logger } from '@/utils/logger';
 
-const uri = process.env.MONGODB_URI || "mongodb+srv://adamasemabdelfattahmohamed_db_user:6tMLYoDWekVxcYgU@thecopy.ki81fip.mongodb.net/?appName=thecopy";
+// MongoDB connection URI - MUST be provided via MONGODB_URI environment variable
+// Never hardcode credentials in source code for security reasons
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  logger.error('[MongoDB] MONGODB_URI environment variable is not set');
+  throw new Error('MONGODB_URI environment variable is required. Please set it in your .env file.');
+}
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
