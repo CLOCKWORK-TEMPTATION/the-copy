@@ -21,9 +21,9 @@
   - [x] `stations.ts` - أضيفت runSevenStations function
   - [x] `pipeline-orchestrator.ts` - أضيفت runPipelineWithInterfaces function
   - [x] `redis.ts` - أضيفت getCached و invalidateCache functions
-  - [ ] `api.ts` - يحتاج مراجعة
-  - [ ] `enums` - يحتاج مراجعة
-  - [ ] `types` - يحتاج مراجعة
+  - [x] ✅ `api.ts` - تمت المراجعة وإصلاح جميع المشاكل
+  - [x] ✅ `enums` - تمت إضافة ShotType و RequestMethod enums
+  - [x] ✅ `types` - تمت المراجعة وإضافة جميع الأنواع المفقودة
   - [ ] باقي الملفات موجودة أو غير مطلوبة
 
 ### ✅ إصلاح أخطاء الأنواع (70% مكتمل)
