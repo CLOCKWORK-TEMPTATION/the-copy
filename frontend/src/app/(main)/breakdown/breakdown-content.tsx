@@ -18,7 +18,7 @@ interface AnalysisReport {
     overallScore: number;
     rating: string;
   };
-  detailedFindings: Record<string, any>;
+  detailedFindings: Record<string, unknown>;
 }
 
 export default function BreakdownContent() {

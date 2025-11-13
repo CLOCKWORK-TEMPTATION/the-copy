@@ -15,7 +15,7 @@ export enum RequestMethod {
 }
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data: T;
   message?: string;
@@ -147,13 +147,13 @@ export interface ChatMessage {
   id: string;
   message: string;
   response?: string;
-  context?: any;
+  context?: unknown;
   timestamp: string;
 }
 
 export interface ChatRequest {
   message: string;
-  context?: any;
+  context?: unknown;
 }
 
 export interface ChatResponse {
