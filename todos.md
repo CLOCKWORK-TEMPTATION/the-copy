@@ -34,8 +34,8 @@
   - [x] `task-icon-mapper.tsx` - أصلحت TaskCategory enums
   - [x] `useProject.ts` - أصلحت mutation signatures
   - [x] `useAI.ts` - أصلحت function signatures
-  - [x] `ProjectManager.tsx` - تم إصلاح جميع أخطاء TypeScript
-  - [ ] `API routes` - يحتاج إصلاح (~5 أخطاء)
+  - [x] `ProjectManager.tsx` - تم إصلاح جميع أخطاء TypeScript (أضيفت type definitions، error handling، API response types)
+  - [x] `API routes` - تم الإصلاح (أضيفت getCached و invalidateCache إلى redis.ts، أصلحت توقيع runSevenStations، أضيفت type annotations)
 - [x] إضافة type annotations للمتغيرات ذات النوع `any` الضمني (جزئياً)
 - [x] إضافة null checks وoptional chaining للمتغيرات التي قد تكون `undefined` (جزئياً)
 - [x] إضافة override modifiers (2 من 5 حالات)
