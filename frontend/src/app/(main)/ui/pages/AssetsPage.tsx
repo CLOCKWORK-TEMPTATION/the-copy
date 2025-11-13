@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { ExportHub } from "../components/ExportHub";
-import { UploadDock } from "../components/UploadDock";
-import { AssetsShelf } from "../components/AssetsShelf";
+import { ExportHub } from "@/app/(main)/ui/components/ExportHub";
+import { UploadDock } from "@/app/(main)/ui/components/UploadDock";
+import { AssetsShelf } from "@/app/(main)/ui/components/AssetsShelf";
 import {
   Tabs,
   TabsContent,

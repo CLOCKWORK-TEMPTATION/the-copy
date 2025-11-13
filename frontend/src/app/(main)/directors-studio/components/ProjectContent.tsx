@@ -1,12 +1,12 @@
 "use client";
 
-import ProjectStats from "./ProjectStats";
-import { ProjectTabs } from "./ProjectTabs";
+import ProjectStats from "@/app/(main)/directors-studio/components/ProjectStats";
+import { ProjectTabs } from "@/app/(main)/directors-studio/components/ProjectTabs";
 import {
   calculateProjectStats,
   type CharacterTrackerProps,
   type SceneCardProps,
-} from "../helpers/projectSummary";
+} from "@/app/(main)/directors-studio/helpers/projectSummary";
 
 interface ProjectContentProps {
   scenes: SceneCardProps[];

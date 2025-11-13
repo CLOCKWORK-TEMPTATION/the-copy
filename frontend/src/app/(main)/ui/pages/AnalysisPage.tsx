@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { SevenStationsDock } from "../components/SevenStationsDock";
-import { UploadDock } from "../components/UploadDock";
-import { ConfidenceMeter } from "../components/ConfidenceMeter";
-import { DebateView } from "../components/DebateView";
-import { CausalPlotGraph } from "../components/CausalPlotGraph";
-import { ExportHub } from "../components/ExportHub";
+import { SevenStationsDock } from "@/app/(main)/ui/components/SevenStationsDock";
+import { UploadDock } from "@/app/(main)/ui/components/UploadDock";
+import { ConfidenceMeter } from "@/app/(main)/ui/components/ConfidenceMeter";
+import { DebateView } from "@/app/(main)/ui/components/DebateView";
+import { CausalPlotGraph } from "@/app/(main)/ui/components/CausalPlotGraph";
+import { ExportHub } from "@/app/(main)/ui/components/ExportHub";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
