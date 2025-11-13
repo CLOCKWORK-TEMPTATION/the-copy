@@ -35,7 +35,8 @@ export function useProjectCharacters(projectId: string | undefined) {
 
 export function useCreateCharacter() {
   return useMutation({
-    mutationFn: (character: any) => api.createCharacter(character),
+    mutationFn: (data: { projectId: string; name: string; description?: string }) => 
+      api.createCharacter(data.projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "characters"] });
     },
@@ -66,7 +67,7 @@ export function useDeleteCharacter() {
 
 export function useCreateProject() {
   return useMutation({
-    mutationFn: (title: string) => api.createProject(title),
+    mutationFn: (data: { name: string; description?: string }) => api.createProject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
     },
@@ -94,8 +95,8 @@ export function useDeleteProject() {
 
 export function useAnalyzeScript() {
   return useMutation({
-    mutationFn: ({ projectId, file }: { projectId: string; file: File }) =>
-      api.analyzeScript(projectId, file),
+    mutationFn: ({ projectId, script }: { projectId: string; script: string }) =>
+      api.analyzeScript(projectId, script),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
@@ -106,7 +107,8 @@ export function useAnalyzeScript() {
 
 export function useCreateScene() {
   return useMutation({
-    mutationFn: (scene: any) => api.createScene(scene),
+    mutationFn: (data: { projectId: string; title: string; description?: string; script?: string }) => 
+      api.createScene(data.projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
     },
@@ -145,7 +147,8 @@ export function useSceneShots(sceneId: string | undefined) {
 
 export function useCreateShot() {
   return useMutation({
-    mutationFn: (shot: any) => api.createShot(shot),
+    mutationFn: (data: { sceneId: string; title: string; description?: string; type: string }) => 
+      api.createShot(data.sceneId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scenes", variables.sceneId, "shots"] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });

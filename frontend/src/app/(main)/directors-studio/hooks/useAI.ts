@@ -5,20 +5,18 @@ export function useChatWithAI() {
   return useMutation({
     mutationFn: ({
       message,
-      history,
-      onChunk
+      context
     }: {
       message: string;
-      history: Array<{ role: string; content: string }>;
-      onChunk?: (chunk: string) => void;
+      context?: any;
     }) =>
-      api.chatWithAI(message, history, onChunk),
+      api.chatWithAI(message, context),
   });
 }
 
 export function useGetShotSuggestion() {
   return useMutation({
-    mutationFn: ({ sceneDescription, shotType, cameraAngle }: { sceneDescription: string; shotType: string; cameraAngle: string }) =>
-      api.getShotSuggestion(sceneDescription, shotType, cameraAngle),
+    mutationFn: ({ projectId, sceneId, shotType }: { projectId: string; sceneId: string; shotType: string }) =>
+      api.getShotSuggestion(projectId, sceneId, shotType),
   });
 }

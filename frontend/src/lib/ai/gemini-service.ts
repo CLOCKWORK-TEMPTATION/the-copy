@@ -3,17 +3,7 @@
  * Provides GeminiModel and GeminiConfig exports for compatibility
  */
 
-export interface GeminiConfig {
-  apiKey: string;
-  model?: string;
-  temperature?: number;
-  maxTokens?: number;
-}
-
-export interface GeminiModel {
-  generateContent(prompt: string): Promise<string>;
-  generateContentStream(prompt: string): AsyncIterableIterator<string>;
-}
-
 // Re-export from gemini-core for compatibility
-export { GeminiConfig, GeminiModel } from './gemini-core';
+export type { GeminiConfig, GeminiModel } from './gemini-core';
+export { GeminiCore, createGeminiCore } from './gemini-core';
+export type { GeminiService } from './gemini-core';

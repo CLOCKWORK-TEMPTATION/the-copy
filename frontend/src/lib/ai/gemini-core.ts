@@ -62,5 +62,8 @@ export async function* streamFlash(prompt: string, config?: Partial<GeminiConfig
   yield* core.generateContentStream(prompt);
 }
 
+// Export types for compatibility
+export type GeminiService = GeminiCore;
+
 // Default export
 export default GeminiCore;

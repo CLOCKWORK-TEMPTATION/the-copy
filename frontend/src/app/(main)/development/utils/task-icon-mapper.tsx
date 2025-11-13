@@ -50,11 +50,10 @@ const TASK_TYPE_ICONS: Partial<Record<TaskType, React.ReactNode>> = {
  * Icon mapping for task categories
  */
 const TASK_CATEGORY_ICONS: Record<TaskCategory, React.ReactNode> = {
-  [TaskCategory.CORE]: <Sparkles className="w-4 h-4" />,
   [TaskCategory.ANALYSIS]: <Lightbulb className="w-4 h-4" />,
   [TaskCategory.CREATIVE]: <Sparkles className="w-4 h-4" />,
-  [TaskCategory.PREDICTIVE]: <Beaker className="w-4 h-4" />,
-  [TaskCategory.ADVANCED_MODULES]: <Clipboard className="w-4 h-4" />,
+  [TaskCategory.INTEGRATED]: <FileText className="w-4 h-4" />,
+  [TaskCategory.GENERAL]: <Clipboard className="w-4 h-4" />,
 };
 
 /**

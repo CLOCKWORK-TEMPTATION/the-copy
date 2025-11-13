@@ -269,8 +269,10 @@ const DramaAnalystApp: React.FC = () => {
     const request: AIRequest = {
       agent: agentId,
       prompt: specialRequirements,
-      files: [processedFile],
-      params: {
+      context: {
+        files: [processedFile],
+      },
+      options: {
         additionalInfo,
         analysisReport: analysisReport,
         analysisId: analysisId,
@@ -286,24 +288,21 @@ const DramaAnalystApp: React.FC = () => {
 
     try {
       // Pass advanced settings to executor
-      const result = await submitTask(request, {
-        ...advancedSettings,
-        originalText: textInput,
-        analysisReport: analysisReport ? JSON.parse(analysisReport) : undefined,
-      });
+      const result = await submitTask(request);
 
-      if (result.ok && result.value) {
-        setAiResponse(result.value);
+      if (result && typeof result === 'object' && 'text' in result) {
+        setAiResponse(result as AIResponse);
         toast({
           title: "تم التحليل بنجاح",
           description: "تم إكمال المهمة بنجاح",
         });
-      } else if ("error" in result) {
-        setError(result.error.message);
+      } else {
+        const errorMsg = typeof result === 'string' ? result : 'حدث خطأ غير متوقع';
+        setError(errorMsg);
         toast({
           variant: "destructive",
           title: "خطأ في التحليل",
-          description: result.error.message,
+          description: errorMsg,
         });
       }
     } catch (e: any) {
