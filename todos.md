@@ -88,7 +88,7 @@
 - [ ] استبدال وسوم `<img>` بـ `next/image` في Frontend
 - [ ] تطبيق التحميل الكسول (Lazy Loading) للمكونات الثقيلة مثل Particles
 - [ ] تطبيق LOD على تأثيرات الجسيمات
-- [ ] تفعيل battery/perf detection للجسيمات على الأجهزة الضعيفة
+- [x] تفعيل battery/perf detection للجسيمات على الأجهزة الضعيفة
 
 ---
 

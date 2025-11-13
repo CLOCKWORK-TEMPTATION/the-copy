@@ -17,6 +17,7 @@ import {
   SAMPLING_BOUNDS,
   PARTICLE_THRESHOLDS,
 } from "@/lib/particle-letters.constants";
+import { getDevicePerformanceDetector } from "@/lib/device-performance";
 
 type Effect = "default" | "spark" | "wave" | "vortex";
 
@@ -47,11 +48,6 @@ function updateCameraPosition(
   camera.position.y = rotationX * 0.5;
   camera.lookAt(0, 0, 0);
 }
-
-const MAX_PARTICLES = {
-  DESKTOP: 6000,
-  MOBILE: 2000,
-};
 
 function updateParticlePhysics(
   positions: Float32Array,
@@ -656,290 +652,343 @@ export default function V0ParticleAnimation() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (prefersReducedMotion) return;
-
     if (!canvasRef.current) return;
 
-    const canvas = canvasRef.current;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      canvas.width / canvas.height,
-      0.1,
-      1000
-    );
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    let detector: Awaited<ReturnType<typeof getDevicePerformanceDetector>> | null = null;
+    let cleanupBatteryMonitor: (() => void) | null = null;
 
-    renderer.setSize(canvas.width, canvas.height);
-    renderer.setClearColor(0x000000);
+    // Async initialization function
+    const initializeParticles = async () => {
+      try {
+        // Initialize performance detector
+        detector = await getDevicePerformanceDetector();
 
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        // Check if particles should be disabled entirely
+        if (detector.shouldDisableParticles()) {
+          console.log('[ParticleBackground] Particles disabled due to device constraints');
+          return;
+        }
 
-    const isMobile = window.innerWidth <= 768;
-    const numParticles = isMobile ? MAX_PARTICLES.MOBILE : MAX_PARTICLES.DESKTOP;
+        const performanceConfig = detector.getPerformanceConfig();
+        const capabilities = detector.getCapabilities();
 
-    const thickness = 0.15;
-    const positions = new Float32Array(numParticles * 3);
-    const colors = new Float32Array(numParticles * 3);
+        console.log('[ParticleBackground] Using performance tier:', detector.getPerformanceTier());
+        console.log('[ParticleBackground] Particle count:', performanceConfig.particleCount);
 
-    const { minX, maxX, minY, maxY } = SAMPLING_BOUNDS;
-
-    const originalPositions = new Float32Array(numParticles * 3);
-    const velocities = new Float32Array(numParticles * 3);
-    const phases = new Float32Array(numParticles);
-
-    camera.position.set(0, 0, 3.2);
-
-    sceneRef.current = {
-      scene,
-      camera,
-      renderer,
-      points: null as any,
-      geometry: null as any,
-      originalPositions,
-      velocities,
-      phases,
-      intersectionPoint: null,
-      rotationX: 0,
-      rotationY: 0,
-      isDragging: false,
-      previousMouseX: 0,
-      previousMouseY: 0,
-      particleCount: 0,
-    };
-
-    let animationId: number;
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!sceneRef.current) return;
-
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / canvas.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / canvas.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersection = new THREE.Vector3();
-      raycaster.ray.intersectPlane(plane, intersection);
-      sceneRef.current.intersectionPoint = intersection;
-    };
-
-    const handleMouseLeave = () => {
-      if (sceneRef.current) {
-        sceneRef.current.intersectionPoint = null;
+        setupParticleScene(performanceConfig.particleCount, detector);
+      } catch (error) {
+        console.error('[ParticleBackground] Failed to initialize:', error);
+        // Fallback to minimal particles on error
+        setupParticleScene(500, null);
       }
     };
 
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseleave", handleMouseLeave);
+    // Start initialization
+    initializeParticles();
 
-    const animate = () => {
-      if (!sceneRef.current) return;
+    const setupParticleScene = (numParticles: number, performanceDetector: Awaited<ReturnType<typeof getDevicePerformanceDetector>> | null) => {
+      if (!canvasRef.current) return;
 
-      const {
+      const canvas = canvasRef.current;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        canvas.width / canvas.height,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+
+      renderer.setSize(canvas.width, canvas.height);
+      renderer.setClearColor(0x000000);
+
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+      const thickness = 0.15;
+      const positions = new Float32Array(numParticles * 3);
+      const colors = new Float32Array(numParticles * 3);
+
+      const { minX, maxX, minY, maxY } = SAMPLING_BOUNDS;
+
+      const originalPositions = new Float32Array(numParticles * 3);
+      const velocities = new Float32Array(numParticles * 3);
+      const phases = new Float32Array(numParticles);
+
+      camera.position.set(0, 0, 3.2);
+
+      sceneRef.current = {
         scene,
         camera,
         renderer,
-        geometry,
+        points: null as any,
+        geometry: null as any,
         originalPositions,
         velocities,
-        intersectionPoint,
-        rotationY,
-        particleCount,
-      } = sceneRef.current;
+        phases,
+        intersectionPoint: null,
+        rotationX: 0,
+        rotationY: 0,
+        isDragging: false,
+        previousMouseX: 0,
+        previousMouseY: 0,
+        particleCount: 0,
+      };
 
-      if (!geometry || particleCount === 0) {
-        renderer.render(scene, camera);
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
+      let animationId: number;
 
-      const positionAttribute = geometry.getAttribute("position");
-      const colorAttribute = geometry.getAttribute("color");
-
-      if (!positionAttribute || !colorAttribute) {
-        renderer.render(scene, camera);
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      updateCameraPosition(camera, 0, rotationY);
-
-      const positions = new Float32Array(positionAttribute.array);
-      const colors = new Float32Array(colorAttribute.array);
-
-      updateParticlePhysics(positions, velocities, originalPositions, colors, particleCount, {
-        intersectionPoint,
-        effect: currentEffect,
-        repelStrength: 0.08,
-        damping: 0.92,
-      });
-
-      if (positionAttribute instanceof THREE.BufferAttribute) {
-        positionAttribute.set(positions);
-        positionAttribute.needsUpdate = true;
-      }
-      if (colorAttribute instanceof THREE.BufferAttribute) {
-        colorAttribute.set(colors);
-        colorAttribute.needsUpdate = true;
-      }
-
-      renderer.render(scene, camera);
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animationId = requestAnimationFrame(animate);
-
-    const generateParticlesInBatches = (batchSize = 750): Promise<number> => {
-      return new Promise((resolve, reject) => {
-        let generatedCount = 0;
-        const maxAttempts = 3000000;
-        let attempts = 0;
-        let batchAttempts = 0;
-        const maxBatchAttempts = 50000;
-
-        const processBatch = () => {
-          try {
-            let batchGenerated = 0;
-
-            while (
-              batchGenerated < batchSize &&
-              generatedCount < numParticles &&
-              attempts < maxAttempts &&
-              batchAttempts < maxBatchAttempts
-            ) {
-              attempts++;
-              batchAttempts++;
-
-              const x = Math.random() * (maxX - minX) + minX;
-              const y = Math.random() * (maxY - minY) + minY;
-              const z = Math.random() * thickness - thickness / 2;
-
-              const d = dist(x, y);
-
-              const threshold =
-                x > 2.5
-                  ? PARTICLE_THRESHOLDS.arabic
-                  : PARTICLE_THRESHOLDS.english;
-
-              if (d <= threshold) {
-                positions[generatedCount * 3] = x;
-                positions[generatedCount * 3 + 1] = y;
-                positions[generatedCount * 3 + 2] = z;
-                colors[generatedCount * 3] = 1;
-                colors[generatedCount * 3 + 1] = 1;
-                colors[generatedCount * 3 + 2] = 1;
-                generatedCount++;
-                batchGenerated++;
-              }
-            }
-
-            if (
-              generatedCount < numParticles &&
-              attempts < maxAttempts &&
-              batchAttempts < maxBatchAttempts
-            ) {
-              if (typeof requestIdleCallback !== "undefined") {
-                requestIdleCallback(processBatch, { timeout: 100 });
-              } else {
-                setTimeout(processBatch, 0);
-              }
-            } else {
-              resolve(generatedCount);
-            }
-          } catch (error) {
-            reject(error);
-          }
-        };
-
-        processBatch();
-      });
-    };
-
-    generateParticlesInBatches()
-      .then((finalCount) => {
-        console.log("[v0] Generated particles:", finalCount);
+      const handleMouseMove = (event: MouseEvent) => {
         if (!sceneRef.current) return;
 
-        sceneRef.current.particleCount = finalCount;
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / canvas.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / canvas.height) * 2 + 1;
 
-        const finalPositions = positions.slice(0, finalCount * 3);
-        const finalColors = colors.slice(0, finalCount * 3);
+        raycaster.setFromCamera(mouse, camera);
+        const intersection = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, intersection);
+        sceneRef.current.intersectionPoint = intersection;
+      };
 
-        // Copy to original positions
-        if (finalCount > 0) {
-          for (let i = 0; i < finalCount * 3; i++) {
-            originalPositions[i] = finalPositions[i] ?? 0;
-          }
+      const handleMouseLeave = () => {
+        if (sceneRef.current) {
+          sceneRef.current.intersectionPoint = null;
+        }
+      };
+
+      canvas.addEventListener("mousemove", handleMouseMove);
+      canvas.addEventListener("mouseleave", handleMouseLeave);
+
+      const animate = () => {
+        if (!sceneRef.current) return;
+
+        const {
+          scene,
+          camera,
+          renderer,
+          geometry,
+          originalPositions,
+          velocities,
+          intersectionPoint,
+          rotationY,
+          particleCount,
+        } = sceneRef.current;
+
+        if (!geometry || particleCount === 0) {
+          renderer.render(scene, camera);
+          animationId = requestAnimationFrame(animate);
+          return;
         }
 
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(finalPositions, 3)
-        );
-        geometry.setAttribute(
-          "color",
-          new THREE.BufferAttribute(finalColors, 3)
-        );
+        const positionAttribute = geometry.getAttribute("position");
+        const colorAttribute = geometry.getAttribute("color");
 
-        const material = new THREE.PointsMaterial({
-          size: 0.0045,
-          sizeAttenuation: true,
-          vertexColors: true,
-          transparent: true,
-          opacity: 0.95,
+        if (!positionAttribute || !colorAttribute) {
+          renderer.render(scene, camera);
+          animationId = requestAnimationFrame(animate);
+          return;
+        }
+
+        updateCameraPosition(camera, 0, rotationY);
+
+        const positions = new Float32Array(positionAttribute.array);
+        const colors = new Float32Array(colorAttribute.array);
+
+        updateParticlePhysics(positions, velocities, originalPositions, colors, particleCount, {
+          intersectionPoint,
+          effect: currentEffect,
+          repelStrength: 0.08,
+          damping: 0.92,
         });
 
-        const points = new THREE.Points(geometry, material);
-        scene.add(points);
+        if (positionAttribute instanceof THREE.BufferAttribute) {
+          positionAttribute.set(positions);
+          positionAttribute.needsUpdate = true;
+        }
+        if (colorAttribute instanceof THREE.BufferAttribute) {
+          colorAttribute.set(colors);
+          colorAttribute.needsUpdate = true;
+        }
 
-        sceneRef.current.geometry = geometry;
-        sceneRef.current.points = points;
+        renderer.render(scene, camera);
+        animationId = requestAnimationFrame(animate);
+      };
 
-        console.log("[v0] Particles added to scene");
-      })
-      .catch((error) => {
-        console.error("Failed to generate particles:", error);
-      });
+      animationId = requestAnimationFrame(animate);
 
-    const cleanup = () => {
-      try {
-        cancelAnimationFrame(animationId);
-        canvas.removeEventListener("mousemove", handleMouseMove);
-        canvas.removeEventListener("mouseleave", handleMouseLeave);
+      const generateParticlesInBatches = (batchSize = 750): Promise<number> => {
+        return new Promise((resolve, reject) => {
+          let generatedCount = 0;
+          const maxAttempts = 3000000;
+          let attempts = 0;
+          let batchAttempts = 0;
+          const maxBatchAttempts = 50000;
 
-        if (sceneRef.current?.geometry) sceneRef.current.geometry.dispose();
-        if (sceneRef.current?.points?.material) {
-          const material = sceneRef.current.points.material;
-          if (material && !Array.isArray(material)) {
-            material.dispose();
+          const processBatch = () => {
+            try {
+              let batchGenerated = 0;
+
+              while (
+                batchGenerated < batchSize &&
+                generatedCount < numParticles &&
+                attempts < maxAttempts &&
+                batchAttempts < maxBatchAttempts
+              ) {
+                attempts++;
+                batchAttempts++;
+
+                const x = Math.random() * (maxX - minX) + minX;
+                const y = Math.random() * (maxY - minY) + minY;
+                const z = Math.random() * thickness - thickness / 2;
+
+                const d = dist(x, y);
+
+                const threshold =
+                  x > 2.5
+                    ? PARTICLE_THRESHOLDS.arabic
+                    : PARTICLE_THRESHOLDS.english;
+
+                if (d <= threshold) {
+                  positions[generatedCount * 3] = x;
+                  positions[generatedCount * 3 + 1] = y;
+                  positions[generatedCount * 3 + 2] = z;
+                  colors[generatedCount * 3] = 1;
+                  colors[generatedCount * 3 + 1] = 1;
+                  colors[generatedCount * 3 + 2] = 1;
+                  generatedCount++;
+                  batchGenerated++;
+                }
+              }
+
+              if (
+                generatedCount < numParticles &&
+                attempts < maxAttempts &&
+                batchAttempts < maxBatchAttempts
+              ) {
+                if (typeof requestIdleCallback !== "undefined") {
+                  requestIdleCallback(processBatch, { timeout: 100 });
+                } else {
+                  setTimeout(processBatch, 0);
+                }
+              } else {
+                resolve(generatedCount);
+              }
+            } catch (error) {
+              reject(error);
+            }
+          };
+
+          processBatch();
+        });
+      };
+
+      generateParticlesInBatches()
+        .then((finalCount) => {
+          console.log("[v0] Generated particles:", finalCount);
+          if (!sceneRef.current) return;
+
+          sceneRef.current.particleCount = finalCount;
+
+          const finalPositions = positions.slice(0, finalCount * 3);
+          const finalColors = colors.slice(0, finalCount * 3);
+
+          // Copy to original positions
+          if (finalCount > 0) {
+            for (let i = 0; i < finalCount * 3; i++) {
+              originalPositions[i] = finalPositions[i] ?? 0;
+            }
           }
-        }
-        if (renderer) renderer.dispose();
 
-        if (sceneRef.current) {
-          sceneRef.current.originalPositions = null as any;
-          sceneRef.current.velocities = null as any;
-          sceneRef.current.phases = null as any;
-          sceneRef.current = null;
+          const geometry = new THREE.BufferGeometry();
+          geometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(finalPositions, 3)
+          );
+          geometry.setAttribute(
+            "color",
+            new THREE.BufferAttribute(finalColors, 3)
+          );
+
+          const material = new THREE.PointsMaterial({
+            size: 0.0045,
+            sizeAttenuation: true,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.95,
+          });
+
+          const points = new THREE.Points(geometry, material);
+          scene.add(points);
+
+          sceneRef.current.geometry = geometry;
+          sceneRef.current.points = points;
+
+          console.log("[v0] Particles added to scene");
+        })
+        .catch((error) => {
+          console.error("Failed to generate particles:", error);
+        });
+
+      const cleanup = () => {
+        try {
+          cancelAnimationFrame(animationId);
+          canvas.removeEventListener("mousemove", handleMouseMove);
+          canvas.removeEventListener("mouseleave", handleMouseLeave);
+
+          if (sceneRef.current?.geometry) sceneRef.current.geometry.dispose();
+          if (sceneRef.current?.points?.material) {
+            const material = sceneRef.current.points.material;
+            if (material && !Array.isArray(material)) {
+              material.dispose();
+            }
+          }
+          if (renderer) renderer.dispose();
+
+          if (sceneRef.current) {
+            sceneRef.current.originalPositions = null as any;
+            sceneRef.current.velocities = null as any;
+            sceneRef.current.phases = null as any;
+            sceneRef.current = null;
+          }
+        } catch (error) {
+          console.error("Cleanup error:", error);
         }
-      } catch (error) {
-        console.error("Cleanup error:", error);
+      };
+
+      const safetyCleanup = setTimeout(cleanup, 300000);
+
+      // Setup battery monitoring if available
+      if (performanceDetector) {
+        performanceDetector.monitorBatteryChanges((newTier) => {
+          console.log('[ParticleBackground] Performance tier changed to:', newTier);
+
+          // If battery is critically low, disable particles
+          if (performanceDetector.shouldDisableParticles()) {
+            console.log('[ParticleBackground] Disabling particles due to low battery');
+            cleanup();
+          }
+        }).then((cleanupMonitor) => {
+          cleanupBatteryMonitor = cleanupMonitor;
+        }).catch((error) => {
+          console.debug('[ParticleBackground] Battery monitoring not available:', error);
+        });
       }
+
+      return () => {
+        clearTimeout(safetyCleanup);
+        if (cleanupBatteryMonitor) {
+          cleanupBatteryMonitor();
+        }
+        cleanup();
+      };
     };
 
-    const safetyCleanup = setTimeout(cleanup, 300000);
-
+    // Main cleanup function for the useEffect
     return () => {
-      clearTimeout(safetyCleanup);
-      cleanup();
+      if (cleanupBatteryMonitor) {
+        cleanupBatteryMonitor();
+      }
     };
   }, []);
 
