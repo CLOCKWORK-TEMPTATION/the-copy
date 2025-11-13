@@ -1,8 +1,8 @@
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool, neonConfig } from '@neondatabase/serverless';
-import { env, isProduction } from '../config/env';
+import { env, isProduction } from '@/config/env';
 import * as schema from './schema';
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 import ws from 'ws';
 
 // Configure Neon for WebSocket (required for serverless environments)

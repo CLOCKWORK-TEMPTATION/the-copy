@@ -5,12 +5,12 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
-import { queueManager, QueueName } from '../queue.config';
-import { queueAIAnalysis, registerAIAnalysisWorker } from '../jobs/ai-analysis.job';
+import { queueManager, QueueName } from '@/queues/queue.config';
+import { queueAIAnalysis, registerAIAnalysisWorker } from '@/queues/jobs/ai-analysis.job';
 import {
   queueDocumentProcessing,
   registerDocumentProcessingWorker,
-} from '../jobs/document-processing.job';
+} from '@/queues/jobs/document-processing.job';
 import { Queue } from 'bullmq';
 
 describe('Queue Integration Tests', () => {

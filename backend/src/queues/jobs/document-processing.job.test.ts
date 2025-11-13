@@ -10,7 +10,7 @@ import {
   registerDocumentProcessingWorker,
   DocumentProcessingJobData,
 } from './document-processing.job';
-import { queueManager, QueueName } from '../queue.config';
+import { queueManager, QueueName } from '@/queues/queue.config';
 
 describe('Document Processing Job', () => {
   beforeEach(() => {
