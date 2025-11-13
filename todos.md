@@ -26,19 +26,22 @@
   - [ ] `types` - يحتاج مراجعة
   - [ ] باقي الملفات موجودة أو غير مطلوبة
 
-### 🟡 إصلاح أخطاء الأنواع (57% مكتمل)
-- [~] إصلاح أخطاء صرامة الأنواع (~51 من 90 خطأ):
+### ✅ إصلاح أخطاء الأنواع (70% مكتمل)
+- [~] إصلاح أخطاء صرامة الأنواع (~60 من 90 خطأ):
   - [x] `landing-card-scanner.tsx` - أضيفت type guards و null checks
   - [x] `ErrorBoundary.tsx` - أضيفت override modifiers
-  - [ ] `creative-development.tsx` - يحتاج إصلاح
-  - [ ] `useProject.ts` - يحتاج إصلاح
-  - [ ] `ProjectManager.tsx` - يحتاج إصلاح
+  - [x] `creative-development.tsx` - أصلحت AIRequest type
+  - [x] `task-icon-mapper.tsx` - أصلحت TaskCategory enums
+  - [x] `useProject.ts` - أصلحت mutation signatures
+  - [x] `useAI.ts` - أصلحت function signatures
+  - [ ] `ProjectManager.tsx` - يحتاج إصلاح (~10 أخطاء)
+  - [ ] `API routes` - يحتاج إصلاح (~5 أخطاء)
 - [x] إضافة type annotations للمتغيرات ذات النوع `any` الضمني (جزئياً)
 - [x] إضافة null checks وoptional chaining للمتغيرات التي قد تكون `undefined` (جزئياً)
 - [x] إضافة override modifiers (2 من 5 حالات)
 
 ### 🟡 التحقق من البناء
-- [ ] تشغيل `pnpm typecheck` في Frontend والتحقق من عدم وجود أخطاء (39 خطأ متبقي)
+- [~] تشغيل `pnpm typecheck` في Frontend والتحقق من عدم وجود أخطاء (~30 خطأ متبقي)
 - [ ] إزالة `ignoreBuildErrors` و`ignoredDuringBuilds` من `next.config.ts`
 - [ ] تشغيل `pnpm build` في Frontend والتحقق من نجاح البناء
 

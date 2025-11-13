@@ -1,129 +1,132 @@
-// Redis configuration and utilities for caching
+/**
+ * Redis client configuration and utilities
+ */
 
-export interface CacheConfig {
-  ttl: number; // Time to live in seconds
-  namespace: string; // Key namespace for organization
+export interface RedisConfig {
+  host: string;
+  port: number;
+  password?: string;
+  db?: number;
+  keyPrefix?: string;
+  maxRetriesPerRequest?: number;
+  enableReadyCheck?: boolean;
+  maxmemoryPolicy?: string;
 }
 
-// Default cache configuration
-export const DEFAULT_CACHE_CONFIG: CacheConfig = {
-  ttl: 3600, // 1 hour
-  namespace: 'the-copy',
-};
+export interface RedisClient {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string, ttl?: number): Promise<void>;
+  del(key: string): Promise<void>;
+  exists(key: string): Promise<boolean>;
+  keys(pattern: string): Promise<string[]>;
+  flushdb(): Promise<void>;
+  ping(): Promise<string>;
+  disconnect(): Promise<void>;
+}
 
-// Cache utilities using localStorage as fallback
-export class SimpleCache {
-  private prefix: string;
+export class RedisService implements RedisClient {
+  private config: RedisConfig;
+  private connected: boolean = false;
 
-  constructor(prefix = 'cache') {
-    this.prefix = prefix;
+  constructor(config: RedisConfig) {
+    this.config = {
+      host: 'localhost',
+      port: 6379,
+      db: 0,
+      maxRetriesPerRequest: 3,
+      enableReadyCheck: true,
+      ...config,
+    };
   }
 
-  private getStorageKey(key: string): string {
-    return `${this.prefix}:${key}`;
+  async connect(): Promise<void> {
+    // Stub implementation - would connect to actual Redis
+    this.connected = true;
+    console.log('Redis connected');
   }
 
-  set(key: string, value: any, ttl = DEFAULT_CACHE_CONFIG.ttl): void {
-    try {
-      const item = {
-        value,
-        expiry: Date.now() + (ttl * 1000),
-      };
-      localStorage.setItem(this.getStorageKey(key), JSON.stringify(item));
-    } catch (error) {
-      console.warn('Cache set failed:', error);
-    }
+  async get(key: string): Promise<string | null> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    return null;
   }
 
-  get<T = any>(key: string): T | null {
-    try {
-      const itemStr = localStorage.getItem(this.getStorageKey(key));
-      if (!itemStr) return null;
-
-      const item = JSON.parse(itemStr);
-      if (Date.now() > item.expiry) {
-        this.delete(key);
-        return null;
-      }
-
-      return item.value;
-    } catch (error) {
-      console.warn('Cache get failed:', error);
-      return null;
-    }
+  async set(key: string, value: string, ttl?: number): Promise<void> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    console.log(`Redis set: ${key} = ${value}`);
   }
 
-  delete(key: string): void {
-    try {
-      localStorage.removeItem(this.getStorageKey(key));
-    } catch (error) {
-      console.warn('Cache delete failed:', error);
-    }
+  async del(key: string): Promise<void> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    console.log(`Redis del: ${key}`);
   }
 
-  clear(): void {
-    try {
-      const keysToDelete: string[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith(`${this.prefix}:`)) {
-          keysToDelete.push(key);
-        }
-      }
-      keysToDelete.forEach(key => localStorage.removeItem(key));
-    } catch (error) {
-      console.warn('Cache clear failed:', error);
-    }
+  async exists(key: string): Promise<boolean> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    return false;
+  }
+
+  async keys(pattern: string): Promise<string[]> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    return [];
+  }
+
+  async flushdb(): Promise<void> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    console.log('Redis flushdb');
+  }
+
+  async ping(): Promise<string> {
+    if (!this.connected) await this.connect();
+    // Stub implementation
+    return 'PONG';
+  }
+
+  async disconnect(): Promise<void> {
+    this.connected = false;
+    console.log('Redis disconnected');
   }
 }
 
-// Cache keys for different data types
-export const CACHE_KEYS = {
-  PROJECTS: 'projects',
-  PROJECT: (id: string) => `project:${id}`,
-  SCENES: (projectId: string) => `scenes:${projectId}`,
-  SCENE: (id: string) => `scene:${id}`,
-  SHOTS: (sceneId: string) => `shots:${sceneId}`,
-  SHOT: (id: string) => `shot:${id}`,
-  ANALYSIS: (projectId: string) => `analysis:${projectId}`,
-  SUGGESTIONS: (sceneId: string) => `suggestions:${sceneId}`,
-  CHAT: 'chat',
-  USER_PREFERENCES: 'user-preferences',
-} as const;
+// Create a singleton instance
+let redisInstance: RedisService | null = null;
 
-// Helper functions for common cache operations
-export const cache = new SimpleCache('the-copy');
-
-export const cacheProject = (project: any, ttl = 1800): void => {
-  cache.set(CACHE_KEYS.PROJECT(project.id), project, ttl);
-};
-
-export const getCachedProject = (projectId: string): any => {
-  return cache.get(CACHE_KEYS.PROJECT(projectId));
-};
-
-export const cacheScenes = (projectId: string, scenes: any[], ttl = 900): void => {
-  cache.set(CACHE_KEYS.SCENES(projectId), scenes, ttl);
-};
-
-export const getCachedScenes = (projectId: string): any[] => {
-  return cache.get(CACHE_KEYS.SCENES(projectId)) || [];
-};
-
-export const cacheAnalysis = (projectId: string, analysis: any, ttl = 3600): void => {
-  cache.set(CACHE_KEYS.ANALYSIS(projectId), analysis, ttl);
-};
-
-export const getCachedAnalysis = (projectId: string): any => {
-  return cache.get(CACHE_KEYS.ANALYSIS(projectId));
-};
-
-export const clearProjectCache = (projectId?: string): void => {
-  if (projectId) {
-    cache.delete(CACHE_KEYS.PROJECT(projectId));
-    cache.delete(CACHE_KEYS.SCENES(projectId));
-    cache.delete(CACHE_KEYS.ANALYSIS(projectId));
-  } else {
-    cache.clear(); // Clear all cache
+export function createRedisClient(config: RedisConfig): RedisService {
+  if (!redisInstance) {
+    redisInstance = new RedisService(config);
   }
+  return redisInstance;
+}
+
+export function getRedisClient(): RedisService | null {
+  return redisInstance;
+}
+
+// Default configuration
+export const defaultRedisConfig: RedisConfig = {
+  host: process.env.REDIS_HOST || 'localhost',
+  port: parseInt(process.env.REDIS_PORT || '6379'),
+  password: process.env.REDIS_PASSWORD,
+  db: parseInt(process.env.REDIS_DB || '0'),
+  keyPrefix: process.env.REDIS_KEY_PREFIX || 'app:',
+  maxRetriesPerRequest: 3,
+  enableReadyCheck: true,
+};
+
+// Export types
+export type { RedisConfig as Config };
+export type { RedisClient as Client };
+export type { RedisService as Service };
+
+// Default export
+export default {
+  RedisService,
+  createRedisClient,
+  getRedisClient,
+  defaultRedisConfig,
 };
