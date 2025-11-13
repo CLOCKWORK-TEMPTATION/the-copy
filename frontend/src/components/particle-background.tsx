@@ -18,6 +18,16 @@ import {
   PARTICLE_THRESHOLDS,
 } from "@/lib/particle-letters.constants";
 
+import {
+  getDeviceCapabilities,
+  getParticleLODConfig,
+  PerformanceMonitor,
+  logDeviceCapabilities,
+} from "./device-detection";
+
+// Create a single performance monitor instance for the module
+const performanceMonitor = new PerformanceMonitor();
+
 type Effect = "default" | "spark" | "wave" | "vortex";
 
 interface ParticlePosition {
@@ -48,10 +58,25 @@ function updateCameraPosition(
   camera.lookAt(0, 0, 0);
 }
 
-const MAX_PARTICLES = {
-  DESKTOP: 6000,
-  MOBILE: 2000,
-};
+/**
+ * Get optimal particle configuration using LOD system
+ */
+function getOptimalParticleCount(): number {
+  if (typeof window === 'undefined') {
+    return 3000;
+  }
+
+  // Use comprehensive device detection system
+  const capabilities = getDeviceCapabilities();
+  const lodConfig = getParticleLODConfig(capabilities);
+
+  // Log device capabilities in development
+  if (process.env.NODE_ENV === 'development') {
+    logDeviceCapabilities();
+  }
+
+  return lodConfig.particleCount;
+}
 
 function updateParticlePhysics(
   positions: Float32Array,
@@ -682,8 +707,8 @@ export default function V0ParticleAnimation() {
     const mouse = new THREE.Vector2();
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 
-    const isMobile = window.innerWidth <= 768;
-    const numParticles = isMobile ? MAX_PARTICLES.MOBILE : MAX_PARTICLES.DESKTOP;
+    // Use LOD system to determine optimal particle count
+    const numParticles = getOptimalParticleCount();
 
     const thickness = 0.15;
     const positions = new Float32Array(numParticles * 3);
@@ -741,6 +766,10 @@ export default function V0ParticleAnimation() {
 
     const animate = () => {
       if (!sceneRef.current) return;
+
+      // Record frame time for performance monitoring
+      const currentTime = performance.now();
+      performanceMonitor.recordFrame(currentTime);
 
       const {
         scene,
@@ -923,6 +952,10 @@ export default function V0ParticleAnimation() {
           }
         }
         if (renderer) renderer.dispose();
+
+        // Cleanup performance monitor
+        performanceMonitor.reset();
+        performanceMonitor.destroy();
 
         if (sceneRef.current) {
           sceneRef.current.originalPositions = null as any;
