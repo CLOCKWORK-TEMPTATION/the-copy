@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VideoTextMask } from "@/components/video-text-mask";
-import { LandingCardScanner } from "@/components/card-scanner/landing-card-scanner";
+import { LazyLandingCardScanner } from "@/components/landing/card-scanner/lazy-landing-card-scanner";
 
 // Register GSAP plugin
 if (typeof window !== "undefined") {
@@ -128,7 +128,7 @@ export default function Home() {
         ref={cardsContainerRef}
         className="relative h-screen bg-black overflow-hidden"
       >
-        <LandingCardScanner />
+        <LazyLandingCardScanner />
       </section>
 
       {/* Footer */}
