@@ -53,10 +53,11 @@ export interface ApiResponse<T = any> {
 // Project interfaces
 export interface Project {
   id: string;
-  name: string;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  title: string;
+  scriptContent?: string;
+  userId?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
   status?: 'active' | 'archived' | 'draft';
 }
 

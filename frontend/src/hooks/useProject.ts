@@ -1,18 +1,25 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import * as api from "@/lib/api";
+import type { Project, CreateProjectRequest, UpdateProjectRequest, CreateSceneRequest, CreateShotRequest } from "@/types/api";
 
 export function useProjects() {
   return useQuery({
     queryKey: ["/api/projects"],
-    queryFn: api.getProjects,
+    queryFn: async () => {
+      const response = await api.getProjects();
+      return response.data;
+    },
   });
 }
 
 export function useProject(id: string | undefined) {
   return useQuery({
     queryKey: ["/api/projects", id],
-    queryFn: () => api.getProject(id!),
+    queryFn: async () => {
+      const response = await api.getProject(id!);
+      return response.data;
+    },
     enabled: !!id,
   });
 }
@@ -20,7 +27,10 @@ export function useProject(id: string | undefined) {
 export function useProjectScenes(projectId: string | undefined) {
   return useQuery({
     queryKey: ["/api/projects", projectId, "scenes"],
-    queryFn: () => api.getProjectScenes(projectId!),
+    queryFn: async () => {
+      const response = await api.getProjectScenes(projectId!);
+      return response.data;
+    },
     enabled: !!projectId,
   });
 }
@@ -28,7 +38,10 @@ export function useProjectScenes(projectId: string | undefined) {
 export function useProjectCharacters(projectId: string | undefined) {
   return useQuery({
     queryKey: ["/api/projects", projectId, "characters"],
-    queryFn: () => api.getProjectCharacters(projectId!),
+    queryFn: async () => {
+      const response = await api.getProjectCharacters(projectId!);
+      return response.data;
+    },
     enabled: !!projectId,
   });
 }
@@ -45,9 +58,9 @@ export function useCreateCharacter() {
 
 export function useUpdateCharacter() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => api.updateCharacter(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => api.updateCharacter(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ predicate: (query) => 
+      queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "characters"
       });
     },
@@ -67,7 +80,7 @@ export function useDeleteCharacter() {
 
 export function useCreateProject() {
   return useMutation({
-    mutationFn: (data: { name: string; description?: string }) => api.createProject(data),
+    mutationFn: (data: CreateProjectRequest) => api.createProject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
     },
@@ -76,7 +89,7 @@ export function useCreateProject() {
 
 export function useUpdateProject() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => api.updateProject(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateProjectRequest }) => api.updateProject(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.id] });
@@ -107,7 +120,7 @@ export function useAnalyzeScript() {
 
 export function useCreateScene() {
   return useMutation({
-    mutationFn: (data: { projectId: string; title: string; description?: string; script?: string }) => 
+    mutationFn: (data: { projectId: string } & CreateSceneRequest) =>
       api.createScene(data.projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "scenes"] });
@@ -117,9 +130,9 @@ export function useCreateScene() {
 
 export function useUpdateScene() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => api.updateScene(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateSceneRequest> }) => api.updateScene(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ predicate: (query) => 
+      queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "scenes"
       });
     },
@@ -140,14 +153,17 @@ export function useDeleteScene() {
 export function useSceneShots(sceneId: string | undefined) {
   return useQuery({
     queryKey: ["/api/scenes", sceneId, "shots"],
-    queryFn: () => api.getSceneShots(sceneId!),
+    queryFn: async () => {
+      const response = await api.getSceneShots(sceneId!);
+      return response.data;
+    },
     enabled: !!sceneId,
   });
 }
 
 export function useCreateShot() {
   return useMutation({
-    mutationFn: (data: { sceneId: string; title: string; description?: string; type: string }) => 
+    mutationFn: (data: { sceneId: string } & CreateShotRequest) =>
       api.createShot(data.sceneId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scenes", variables.sceneId, "shots"] });
@@ -158,12 +174,12 @@ export function useCreateShot() {
 
 export function useUpdateShot() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => api.updateShot(id, data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateShotRequest> }) => api.updateShot(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ predicate: (query) => 
+      queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/scenes" && query.queryKey[2] === "shots"
       });
-      queryClient.invalidateQueries({ predicate: (query) => 
+      queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "scenes"
       });
     },

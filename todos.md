@@ -34,7 +34,7 @@
   - [x] `task-icon-mapper.tsx` - أصلحت TaskCategory enums
   - [x] `useProject.ts` - أصلحت mutation signatures
   - [x] `useAI.ts` - أصلحت function signatures
-  - [ ] `ProjectManager.tsx` - يحتاج إصلاح (~10 أخطاء)
+  - [x] `ProjectManager.tsx` - تم إصلاح جميع أخطاء TypeScript
   - [ ] `API routes` - يحتاج إصلاح (~5 أخطاء)
 - [x] إضافة type annotations للمتغيرات ذات النوع `any` الضمني (جزئياً)
 - [x] إضافة null checks وoptional chaining للمتغيرات التي قد تكون `undefined` (جزئياً)
