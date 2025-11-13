@@ -278,6 +278,9 @@ export function LandingCardScanner() {
         const imageSrc = images[imageIndex] ?? images[0]
         cardImage.src = imageSrc ?? ''
         cardImage.alt = card.title
+        cardImage.loading = "lazy"
+        cardImage.decoding = "async"
+        cardImage.setAttribute("fetchpriority", "low")
 
         cardImage.onerror = () => {
           const canvas = document.createElement("canvas")

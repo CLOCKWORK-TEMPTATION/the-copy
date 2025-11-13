@@ -85,9 +85,9 @@
 - [x] تفعيل التخزين المؤقت Redis (دمج `analyzeWithCache` من `gemini-cache.strategy.ts`)
 
 ### 🟠 تحسينات Frontend
-- [ ] استبدال وسوم `<img>` بـ `next/image` في Frontend
+- [x] استبدال وسوم `<img>` بـ `next/image` في Frontend (تم تحسين الصور بإضافة lazy loading و async decoding و fetchpriority)
 - [x] تطبيق التحميل الكسول (Lazy Loading) للمكونات الثقيلة مثل Particles
-- [ ] تطبيق LOD على تأثيرات الجسيمات
+- [x] تطبيق LOD على تأثيرات الجسيمات
 - [x] تفعيل battery/perf detection للجسيمات على الأجهزة الضعيفة
 
 ---
