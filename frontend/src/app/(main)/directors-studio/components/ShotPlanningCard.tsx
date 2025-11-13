@@ -12,7 +12,7 @@ import {
   Lightbulb,
   Loader2,
   Sparkles,
-  Trash2
+  Trash2,
 } from "lucide-react";
 import {
   Select,
@@ -33,21 +33,26 @@ interface ShotPlanningCardProps {
   onDelete?: () => void;
 }
 
-const ShotPlanningCard = memo(function ShotPlanningCard({ 
-  shot, 
-  shotNumber, 
-  sceneNumber, 
+const ShotPlanningCard = memo(function ShotPlanningCard({
+  shot,
+  shotNumber,
+  sceneNumber,
   sceneDescription = "",
   onSave,
-  onDelete
+  onDelete,
 }: ShotPlanningCardProps) {
   const [shotType, setShotType] = useState(shot?.shotType || "medium");
-  const [cameraAngle, setCameraAngle] = useState(shot?.cameraAngle || "eye-level");
-  const [cameraMovement, setCameraMovement] = useState(shot?.cameraMovement || "static");
-  const [lighting, setLighting] = useState(shot?.lighting || "natural");
-  const [aiSuggestion, setAiSuggestion] = useState<{ suggestion: string; reasoning: string } | null>(
-    shot?.aiSuggestion ? JSON.parse(shot.aiSuggestion) : null
+  const [cameraAngle, setCameraAngle] = useState(
+    shot?.cameraAngle || "eye-level"
   );
+  const [cameraMovement, setCameraMovement] = useState(
+    shot?.cameraMovement || "static"
+  );
+  const [lighting, setLighting] = useState(shot?.lighting || "natural");
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    suggestion: string;
+    reasoning: string;
+  } | null>(shot?.aiSuggestion ? JSON.parse(shot.aiSuggestion) : null);
 
   const getSuggestionMutation = useGetShotSuggestion();
 
@@ -74,7 +79,9 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
         shotType,
         cameraAngle,
       });
-      setAiSuggestion(result as { suggestion: string; reasoning: string });
+      if ("data" in result && result.data) {
+        setAiSuggestion(result.data);
+      }
     } catch (error) {
       console.error("Failed to get suggestion:", error);
     }
@@ -108,7 +115,7 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
           <CardTitle className="text-lg">اللقطة {shotNumber}</CardTitle>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2 text-right">
@@ -125,7 +132,9 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
                 <SelectItem value="wide">لقطة عريضة</SelectItem>
                 <SelectItem value="medium">لقطة متوسطة</SelectItem>
                 <SelectItem value="close-up">لقطة قريبة</SelectItem>
-                <SelectItem value="extreme-close-up">لقطة قريبة جداً</SelectItem>
+                <SelectItem value="extreme-close-up">
+                  لقطة قريبة جداً
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -189,9 +198,9 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
           </div>
         </div>
 
-        <Button 
-          variant="outline" 
-          className="w-full" 
+        <Button
+          variant="outline"
+          className="w-full"
           onClick={handleGetSuggestion}
           disabled={getSuggestionMutation.isPending}
           data-testid="button-get-ai-suggestion"
@@ -230,9 +239,9 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
 
         <div className="flex gap-2 justify-end flex-wrap">
           {onDelete && shot && (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onDelete}
               className="text-destructive hover:text-destructive"
               data-testid="button-delete-shot"
@@ -242,10 +251,19 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
             </Button>
           )}
           <div className="flex gap-2 mr-auto">
-            <Button variant="outline" size="sm" onClick={handleReset} data-testid="button-reset-shot">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              data-testid="button-reset-shot"
+            >
               إعادة تعيين
             </Button>
-            <Button size="sm" onClick={handleSave} data-testid="button-save-shot">
+            <Button
+              size="sm"
+              onClick={handleSave}
+              data-testid="button-save-shot"
+            >
               حفظ اللقطة
             </Button>
           </div>

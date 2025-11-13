@@ -88,13 +88,15 @@ export default function SystemMetricsDashboard() {
     error: dashboardError,
     refetch: refetchDashboard,
     dataUpdatedAt,
-  } = useDashboardSummary(autoRefresh.enabled ? autoRefresh.interval : false);
+  } = useDashboardSummary(
+    autoRefresh.enabled ? autoRefresh.interval : undefined
+  );
 
   const {
     data: healthData,
     isLoading: isHealthLoading,
     refetch: refetchHealth,
-  } = useHealthStatus(autoRefresh.enabled ? 15000 : false);
+  } = useHealthStatus(autoRefresh.enabled ? 15000 : undefined);
 
   const {
     data: reportData,
@@ -118,7 +120,8 @@ export default function SystemMetricsDashboard() {
 
   // Get status color and icon
   const getHealthStatus = () => {
-    if (!healthData) return { color: "gray", icon: Activity, text: "غير معروف" };
+    if (!healthData)
+      return { color: "gray", icon: Activity, text: "غير معروف" };
 
     switch (healthData.status) {
       case "healthy":
@@ -151,7 +154,11 @@ export default function SystemMetricsDashboard() {
     if (!dashboardData) return [];
     return [
       { name: "نشط", value: dashboardData.queue.active, color: COLORS.info },
-      { name: "مكتمل", value: dashboardData.queue.completed, color: COLORS.success },
+      {
+        name: "مكتمل",
+        value: dashboardData.queue.completed,
+        color: COLORS.success,
+      },
       { name: "فاشل", value: dashboardData.queue.failed, color: COLORS.danger },
     ];
   }, [dashboardData]);
@@ -255,25 +262,33 @@ export default function SystemMetricsDashboard() {
             <div>
               <p className="text-sm text-muted-foreground">معدل الخطأ</p>
               <p className="text-2xl font-bold">
-                {dashboardData ? formatPercentage(dashboardData.overview.errorRate) : "-"}
+                {dashboardData
+                  ? formatPercentage(dashboardData.overview.errorRate)
+                  : "-"}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">وقت الاستجابة</p>
               <p className="text-2xl font-bold">
-                {dashboardData ? `${dashboardData.overview.avgResponseTime.toFixed(0)} ms` : "-"}
+                {dashboardData
+                  ? `${dashboardData.overview.avgResponseTime.toFixed(0)} ms`
+                  : "-"}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">نسبة Cache Hit</p>
               <p className="text-2xl font-bold">
-                {dashboardData ? formatPercentage(dashboardData.overview.cacheHitRatio) : "-"}
+                {dashboardData
+                  ? formatPercentage(dashboardData.overview.cacheHitRatio)
+                  : "-"}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">الطلبات النشطة</p>
               <p className="text-2xl font-bold">
-                {dashboardData ? formatNumber(dashboardData.resources.concurrentRequests) : "-"}
+                {dashboardData
+                  ? formatNumber(dashboardData.resources.concurrentRequests)
+                  : "-"}
               </p>
             </div>
           </div>
@@ -285,12 +300,16 @@ export default function SystemMetricsDashboard() {
         {/* Total Requests */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">إجمالي الطلبات</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              إجمالي الطلبات
+            </CardTitle>
             <Network className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData ? formatNumber(dashboardData.overview.totalRequests) : "-"}
+              {dashboardData
+                ? formatNumber(dashboardData.overview.totalRequests)
+                : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
               {dashboardData && dashboardData.overview.errorRate < 0.05 ? (
@@ -311,15 +330,22 @@ export default function SystemMetricsDashboard() {
         {/* Database Queries */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">استعلامات قاعدة البيانات</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              استعلامات قاعدة البيانات
+            </CardTitle>
             <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData ? formatNumber(dashboardData.database.totalQueries) : "-"}
+              {dashboardData
+                ? formatNumber(dashboardData.database.totalQueries)
+                : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
-              متوسط: {dashboardData ? `${dashboardData.database.avgDuration.toFixed(1)} ms` : "-"}
+              متوسط:{" "}
+              {dashboardData
+                ? `${dashboardData.database.avgDuration.toFixed(1)} ms`
+                : "-"}
             </p>
             {dashboardData && dashboardData.database.slowQueries > 0 && (
               <Badge variant="destructive" className="mt-2">
@@ -332,7 +358,9 @@ export default function SystemMetricsDashboard() {
         {/* Active Jobs */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">الوظائف النشطة</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              الوظائف النشطة
+            </CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -340,7 +368,8 @@ export default function SystemMetricsDashboard() {
               {dashboardData ? dashboardData.queue.active : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
-              إجمالي: {dashboardData ? formatNumber(dashboardData.queue.total) : "-"}
+              إجمالي:{" "}
+              {dashboardData ? formatNumber(dashboardData.queue.total) : "-"}
             </p>
             {dashboardData && dashboardData.queue.failed > 0 && (
               <Badge variant="destructive" className="mt-2">
@@ -358,10 +387,15 @@ export default function SystemMetricsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData ? formatNumber(dashboardData.gemini.totalRequests) : "-"}
+              {dashboardData
+                ? formatNumber(dashboardData.gemini.totalRequests)
+                : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
-              Cache Hit: {dashboardData ? formatPercentage(dashboardData.gemini.cacheHitRatio) : "-"}
+              Cache Hit:{" "}
+              {dashboardData
+                ? formatPercentage(dashboardData.gemini.cacheHitRatio)
+                : "-"}
             </p>
           </CardContent>
         </Card>
@@ -391,11 +425,13 @@ export default function SystemMetricsDashboard() {
                         : "secondary"
                   }
                 >
-                  {dashboardData ? `${dashboardData.resources.cpu.usage.toFixed(1)}%` : "-"}
+                  {dashboardData
+                    ? `${dashboardData.resources.cpu.usage.toFixed(1)}%`
+                    : "-"}
                 </Badge>
               </div>
               <Progress
-                value={dashboardData?.resources.cpu.usage || 0}
+                value={dashboardData?.resources.cpu.usage ?? 0}
                 className="h-2"
               />
             </div>
@@ -413,11 +449,13 @@ export default function SystemMetricsDashboard() {
                         : "secondary"
                   }
                 >
-                  {dashboardData ? `${dashboardData.resources.memory.percent.toFixed(1)}%` : "-"}
+                  {dashboardData
+                    ? `${dashboardData.resources.memory.percent.toFixed(1)}%`
+                    : "-"}
                 </Badge>
               </div>
               <Progress
-                value={dashboardData?.resources.memory.percent || 0}
+                value={dashboardData?.resources.memory.percent ?? 0}
                 className="h-2"
               />
               <p className="text-xs text-muted-foreground mt-1">
@@ -432,7 +470,9 @@ export default function SystemMetricsDashboard() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">ذاكرة Redis</span>
                 <span className="text-sm">
-                  {dashboardData ? formatBytes(dashboardData.redis.memoryUsage) : "-"}
+                  {dashboardData
+                    ? formatBytes(dashboardData.redis.memoryUsage)
+                    : "-"}
                 </span>
               </div>
             </div>
@@ -509,7 +549,8 @@ export default function SystemMetricsDashboard() {
                       <div className="flex-1">
                         <p className="font-medium text-sm">{alert.message}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {alert.metric}: {alert.value.toFixed(2)} (عتبة: {alert.threshold.toFixed(2)})
+                          {alert.metric}: {alert.value.toFixed(2)} (عتبة:{" "}
+                          {alert.threshold.toFixed(2)})
                         </p>
                       </div>
                       <Badge
@@ -537,32 +578,32 @@ export default function SystemMetricsDashboard() {
       )}
 
       {/* Recommendations */}
-      {reportData && reportData.recommendations && reportData.recommendations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Server className="w-5 h-5" />
-              توصيات التحسين
-            </CardTitle>
-            <CardDescription>
-              اقتراحات لتحسين أداء النظام
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {reportData.recommendations.map((rec, index) => (
-                <li
-                  key={index}
-                  className="flex items-start gap-2 text-sm p-2 rounded hover:bg-muted"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span>{rec}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
+      {reportData &&
+        reportData.recommendations &&
+        reportData.recommendations.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Server className="w-5 h-5" />
+                توصيات التحسين
+              </CardTitle>
+              <CardDescription>اقتراحات لتحسين أداء النظام</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {reportData.recommendations.map((rec, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-2 text-sm p-2 rounded hover:bg-muted"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
     </div>
   );
 }

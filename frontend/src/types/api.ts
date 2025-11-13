@@ -101,8 +101,8 @@ export interface Character {
   name: string;
   appearances: number;
   consistencyStatus: string;
-  lastSeen?: string | null;
-  notes?: string | null;
+  lastSeen?: string;
+  notes?: string;
 }
 
 export interface CreateCharacterRequest {

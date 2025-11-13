@@ -3,14 +3,26 @@ import * as api from "@/lib/api";
 
 export function useChatWithAI() {
   return useMutation({
-    mutationFn: ({ message, history }: { message: string; history: Array<{ role: string; content: string }> }) =>
-      api.chatWithAI(message, history),
+    mutationFn: ({
+      message,
+      history,
+    }: {
+      message: string;
+      history: Array<{ role: string; content: string }>;
+    }) => api.chatWithAI(message, { history }),
   });
 }
 
 export function useGetShotSuggestion() {
   return useMutation({
-    mutationFn: ({ sceneDescription, shotType, cameraAngle }: { sceneDescription: string; shotType: string; cameraAngle: string }) =>
-      api.getShotSuggestion(sceneDescription, shotType, cameraAngle),
+    mutationFn: ({
+      projectId,
+      sceneId,
+      shotType,
+    }: {
+      projectId: string;
+      sceneId: string;
+      shotType: string;
+    }) => api.getShotSuggestion(projectId, sceneId, shotType),
   });
 }

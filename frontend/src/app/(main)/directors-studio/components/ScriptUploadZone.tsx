@@ -18,16 +18,23 @@ export default function ScriptUploadZone() {
 
   const handleFile = async (file: File) => {
     try {
-      const project = await createProject.mutateAsync({ name: "مشروع جديد" }) as { id: string; name: string };
-      setCurrentProject(project as any);
+      const project = await createProject.mutateAsync({ title: "مشروع جديد" });
+      if ("data" in project && project.data) {
+        setCurrentProject(project.data);
+      }
 
-      await analyzeScript.mutateAsync({ projectId: project.id, file } as any);
-      
+      if ("data" in project && project.data) {
+        await analyzeScript.mutateAsync({
+          projectId: project.data.id,
+          file,
+        } as any);
+      }
+
       toast({
         title: "تم التحليل بنجاح!",
         description: "تم تحليل السيناريو واستخراج المشاهد والشخصيات",
       });
-      
+
       window.location.reload();
     } catch (error) {
       toast({
@@ -60,9 +67,9 @@ export default function ScriptUploadZone() {
   };
 
   return (
-    <Card 
+    <Card
       className={`p-12 border-2 border-dashed transition-all ${
-        isDragging ? 'border-primary bg-primary/5' : 'border-border'
+        isDragging ? "border-primary bg-primary/5" : "border-border"
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -73,16 +80,20 @@ export default function ScriptUploadZone() {
         {isUploading ? (
           <>
             <Loader2 className="w-16 h-16 text-primary animate-spin" />
-            <p className="text-xl text-muted-foreground">جاري تحميل السيناريو...</p>
+            <p className="text-xl text-muted-foreground">
+              جاري تحميل السيناريو...
+            </p>
           </>
         ) : (
           <>
             <div className="p-6 rounded-full bg-primary/10">
               <Upload className="w-12 h-12 text-primary" />
             </div>
-            
+
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-semibold">قم بتحميل السيناريو الخاص بك</h3>
+              <h3 className="text-2xl font-semibold">
+                قم بتحميل السيناريو الخاص بك
+              </h3>
               <p className="text-muted-foreground">
                 اسحب وأفلت ملف PDF أو Word هنا، أو انقر للاختيار
               </p>
@@ -100,9 +111,9 @@ export default function ScriptUploadZone() {
               accept=".pdf,.doc,.docx,.txt"
               onChange={handleFileSelect}
             />
-            <Button 
+            <Button
               size="lg"
-              onClick={() => document.getElementById('script-upload')?.click()}
+              onClick={() => document.getElementById("script-upload")?.click()}
               data-testid="button-choose-file"
             >
               اختيار ملف

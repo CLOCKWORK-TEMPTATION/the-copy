@@ -16,108 +16,149 @@
  * ```
  */
 
-import dynamic from 'next/dynamic';
-import type { ComponentType } from 'react';
-import type * as RechartsPrimitive from 'recharts';
+import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
+import type * as RechartsPrimitive from "recharts";
 
 // Loading component shown while chart is loading
 const ChartLoading = () => (
   <div className="flex aspect-video items-center justify-center">
-    <div className="animate-pulse text-sm text-muted-foreground">Loading chart...</div>
+    <div className="animate-pulse text-sm text-muted-foreground">
+      Loading chart...
+    </div>
   </div>
 );
 
 // Dynamically import chart components with loading states
 export const DynamicChartContainer = dynamic(
-  () => import('./chart').then(mod => mod.ChartContainer),
+  () => import("./chart").then((mod) => mod.ChartContainer),
   {
     loading: ChartLoading,
-    ssr: false // Charts don't need SSR, improve performance
+    ssr: false, // Charts don't need SSR, improve performance
   }
 );
 
 export const DynamicChartTooltip = dynamic(
-  () => import('./chart').then(mod => mod.ChartTooltip),
+  () => import("./chart").then((mod) => mod.ChartTooltip),
   { ssr: false }
 );
 
 export const DynamicChartTooltipContent = dynamic(
-  () => import('./chart').then(mod => mod.ChartTooltipContent),
+  () => import("./chart").then((mod) => mod.ChartTooltipContent),
   { ssr: false }
 );
 
 export const DynamicChartLegend = dynamic(
-  () => import('./chart').then(mod => mod.ChartLegend),
+  () => import("./chart").then((mod) => mod.ChartLegend),
   { ssr: false }
 );
 
 export const DynamicChartLegendContent = dynamic(
-  () => import('./chart').then(mod => mod.ChartLegendContent),
+  () => import("./chart").then((mod) => mod.ChartLegendContent),
   { ssr: false }
 );
 
 // Dynamically import recharts components
 export const DynamicLineChart = dynamic(
-  () => import('recharts').then(mod => mod.LineChart) as Promise<ComponentType<RechartsPrimitive.LineChartProps>>,
+  () =>
+    import("recharts").then((mod) => mod.LineChart) as Promise<
+      ComponentType<any>
+    >,
   { ssr: false }
 );
 
 export const DynamicBarChart = dynamic(
-  () => import('recharts').then(mod => mod.BarChart) as Promise<ComponentType<RechartsPrimitive.BarChartProps>>,
+  () =>
+    import("recharts").then((mod) => mod.BarChart) as Promise<
+      ComponentType<any>
+    >,
   { ssr: false }
 );
 
 export const DynamicAreaChart = dynamic(
-  () => import('recharts').then(mod => mod.AreaChart) as Promise<ComponentType<RechartsPrimitive.AreaChartProps>>,
+  () =>
+    import("recharts").then((mod) => mod.AreaChart) as Promise<
+      ComponentType<any>
+    >,
   { ssr: false }
 );
 
 export const DynamicPieChart = dynamic(
-  () => import('recharts').then(mod => mod.PieChart) as Promise<ComponentType<RechartsPrimitive.PieChartProps>>,
+  () =>
+    import("recharts").then((mod) => mod.PieChart) as Promise<
+      ComponentType<any>
+    >,
   { ssr: false }
 );
 
 export const DynamicRadarChart = dynamic(
-  () => import('recharts').then(mod => mod.RadarChart) as Promise<ComponentType<RechartsPrimitive.RadarChartProps>>,
+  () =>
+    import("recharts").then((mod) => mod.RadarChart) as Promise<
+      ComponentType<any>
+    >,
   { ssr: false }
 );
 
 export const DynamicLine = dynamic(
-  () => import('recharts').then(mod => mod.Line) as Promise<ComponentType<RechartsPrimitive.LineProps>>,
+  () =>
+    import("recharts").then((mod) => mod.Line) as Promise<
+      ComponentType<RechartsPrimitive.LineProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicBar = dynamic(
-  () => import('recharts').then(mod => mod.Bar) as Promise<ComponentType<RechartsPrimitive.BarProps>>,
+  () =>
+    import("recharts").then((mod) => mod.Bar) as Promise<
+      ComponentType<RechartsPrimitive.BarProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicArea = dynamic(
-  () => import('recharts').then(mod => mod.Area) as Promise<ComponentType<RechartsPrimitive.AreaProps>>,
+  () =>
+    import("recharts").then((mod) => mod.Area) as Promise<
+      ComponentType<RechartsPrimitive.AreaProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicPie = dynamic(
-  () => import('recharts').then(mod => mod.Pie) as Promise<ComponentType<RechartsPrimitive.PieProps>>,
+  () =>
+    import("recharts").then((mod) => mod.Pie) as Promise<
+      ComponentType<RechartsPrimitive.PieProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicRadar = dynamic(
-  () => import('recharts').then(mod => mod.Radar) as Promise<ComponentType<RechartsPrimitive.RadarProps>>,
+  () =>
+    import("recharts").then((mod) => mod.Radar) as Promise<
+      ComponentType<RechartsPrimitive.RadarProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicXAxis = dynamic(
-  () => import('recharts').then(mod => mod.XAxis) as Promise<ComponentType<RechartsPrimitive.XAxisProps>>,
+  () =>
+    import("recharts").then((mod) => mod.XAxis) as Promise<
+      ComponentType<RechartsPrimitive.XAxisProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicYAxis = dynamic(
-  () => import('recharts').then(mod => mod.YAxis) as Promise<ComponentType<RechartsPrimitive.YAxisProps>>,
+  () =>
+    import("recharts").then((mod) => mod.YAxis) as Promise<
+      ComponentType<RechartsPrimitive.YAxisProps>
+    >,
   { ssr: false }
 );
 
 export const DynamicCartesianGrid = dynamic(
-  () => import('recharts').then(mod => mod.CartesianGrid) as Promise<ComponentType<RechartsPrimitive.CartesianGridProps>>,
+  () =>
+    import("recharts").then((mod) => mod.CartesianGrid) as Promise<
+      ComponentType<RechartsPrimitive.CartesianGridProps>
+    >,
   { ssr: false }
 );

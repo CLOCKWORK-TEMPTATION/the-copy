@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+// @ts-ignore
 import { FixedSizeGrid } from "react-window";
 
 interface VirtualizedGridProps<T> {
@@ -81,7 +82,7 @@ export function VirtualizedGrid<T>({
           height: Number(style.height) - gap,
         }}
       >
-        {renderItem(item, index)}
+        {item !== undefined && renderItem(item, index)}
       </div>
     );
   };
@@ -92,7 +93,7 @@ export function VirtualizedGrid<T>({
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%" }}>
-      <FixedSizeGrid
+      <FixedSizeGrid<T>
         columnCount={actualColumnCount}
         columnWidth={itemWidth + gap}
         height={dimensions.height}

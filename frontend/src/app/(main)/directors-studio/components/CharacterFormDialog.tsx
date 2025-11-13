@@ -1,15 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateCharacter, useUpdateCharacter } from "@/hooks/useProject";
-import type { Character } from "@/types/api";
+import type {
+  Character,
+  CreateCharacterRequest,
+  UpdateCharacterRequest,
+} from "@/types/api";
 
 interface CharacterFormDialogProps {
   open: boolean;
@@ -31,20 +47,22 @@ const mapCharacterToFormData = (value?: Character): CharacterFormState => ({
   appearances: value?.appearances ?? 0,
   consistencyStatus: value?.consistencyStatus ?? "good",
   lastSeen: value?.lastSeen ?? null,
-  notes: value?.notes ?? null
+  notes: value?.notes ?? null,
 });
 
 export default function CharacterFormDialog({
   open,
   onOpenChange,
   projectId,
-  character
+  character,
 }: CharacterFormDialogProps) {
   const { toast } = useToast();
   const createCharacter = useCreateCharacter();
   const updateCharacter = useUpdateCharacter();
 
-  const [formData, setFormData] = useState(() => mapCharacterToFormData(character));
+  const [formData, setFormData] = useState(() =>
+    mapCharacterToFormData(character)
+  );
 
   useEffect(() => {
     setFormData(mapCharacterToFormData(character));
@@ -63,24 +81,24 @@ export default function CharacterFormDialog({
     }
 
     const isEditing = Boolean(character);
-    const payload: Omit<Character, 'id' | 'projectId'> = {
+    const payload: Omit<Character, "id" | "projectId"> = {
       name: formData.name,
       appearances: formData.appearances,
       consistencyStatus: formData.consistencyStatus,
-      lastSeen: formData.lastSeen || null,
-      notes: formData.notes || null
+      ...(formData.lastSeen && { lastSeen: formData.lastSeen }),
+      ...(formData.notes && { notes: formData.notes }),
     };
-    
+
     const mutation = isEditing
       ? () =>
           updateCharacter.mutateAsync({
             id: character!.id,
-            data: payload as Partial<Character>
+            data: payload as UpdateCharacterRequest,
           })
       : () =>
           createCharacter.mutateAsync({
             projectId,
-            ...(payload as Character)
+            ...(payload as CreateCharacterRequest),
           });
 
     try {
@@ -88,7 +106,9 @@ export default function CharacterFormDialog({
 
       toast({
         title: isEditing ? "تم التحديث" : "تم الإنشاء",
-        description: isEditing ? "تم تحديث الشخصية بنجاح" : "تم إنشاء الشخصية بنجاح",
+        description: isEditing
+          ? "تم تحديث الشخصية بنجاح"
+          : "تم إنشاء الشخصية بنجاح",
       });
 
       onOpenChange(false);
@@ -112,11 +132,15 @@ export default function CharacterFormDialog({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-right block">اسم الشخصية *</Label>
+            <Label htmlFor="name" className="text-right block">
+              اسم الشخصية *
+            </Label>
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               dir="rtl"
               placeholder="مثال: أحمد محمود"
               data-testid="input-character-name"
@@ -124,25 +148,39 @@ export default function CharacterFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="appearances" className="text-right block">عدد الظهور</Label>
+            <Label htmlFor="appearances" className="text-right block">
+              عدد الظهور
+            </Label>
             <Input
               id="appearances"
               type="number"
               min="0"
               value={formData.appearances}
-              onChange={(e) => setFormData({ ...formData, appearances: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  appearances: parseInt(e.target.value) || 0,
+                })
+              }
               dir="ltr"
               data-testid="input-character-appearances"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="consistencyStatus" className="text-right block">حالة الثبات</Label>
-            <Select 
-              value={formData.consistencyStatus} 
-              onValueChange={(value) => setFormData({ ...formData, consistencyStatus: value })}
+            <Label htmlFor="consistencyStatus" className="text-right block">
+              حالة الثبات
+            </Label>
+            <Select
+              value={formData.consistencyStatus}
+              onValueChange={(value) =>
+                setFormData({ ...formData, consistencyStatus: value })
+              }
             >
-              <SelectTrigger id="consistencyStatus" data-testid="select-character-consistency">
+              <SelectTrigger
+                id="consistencyStatus"
+                data-testid="select-character-consistency"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -154,11 +192,15 @@ export default function CharacterFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="lastSeen" className="text-right block">آخر ظهور</Label>
+            <Label htmlFor="lastSeen" className="text-right block">
+              آخر ظهور
+            </Label>
             <Input
               id="lastSeen"
-              value={formData.lastSeen ?? ''}
-              onChange={(e) => setFormData({ ...formData, lastSeen: e.target.value })}
+              value={formData.lastSeen ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, lastSeen: e.target.value })
+              }
               dir="rtl"
               placeholder="مثال: المشهد 5"
               data-testid="input-character-lastseen"
@@ -166,11 +208,15 @@ export default function CharacterFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-right block">ملاحظات</Label>
+            <Label htmlFor="notes" className="text-right block">
+              ملاحظات
+            </Label>
             <Textarea
               id="notes"
-              value={formData.notes ?? ''}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              value={formData.notes ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
               dir="rtl"
               placeholder="ملاحظات حول الشخصية..."
               className="min-h-24"
@@ -179,20 +225,24 @@ export default function CharacterFormDialog({
           </div>
 
           <DialogFooter className="gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => onOpenChange(false)}
               data-testid="button-cancel"
             >
               إلغاء
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={createCharacter.isPending || updateCharacter.isPending}
               data-testid="button-submit-character"
             >
-              {createCharacter.isPending || updateCharacter.isPending ? "جاري الحفظ..." : character ? "تحديث" : "إضافة"}
+              {createCharacter.isPending || updateCharacter.isPending
+                ? "جاري الحفظ..."
+                : character
+                  ? "تحديث"
+                  : "إضافة"}
             </Button>
           </DialogFooter>
         </form>

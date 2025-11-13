@@ -7,19 +7,15 @@
  * - Component code splitting
  */
 
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // Extend Window interface for TypeScript
 declare global {
   interface Window {
-    gtag?: (
-      command: 'event' | 'config' | 'set' | 'get',
-      targetId: string,
-      config?: Record<string, any>
-    ) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -32,17 +28,20 @@ export function PerformanceOptimizer() {
 
   useEffect(() => {
     // Report Web Vitals on route change
-    if (typeof window !== 'undefined' && 'performance' in window) {
+    if (typeof window !== "undefined" && "performance" in window) {
       // Log navigation timing
-      const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navigationTiming = performance.getEntriesByType(
+        "navigation"
+      )[0] as PerformanceNavigationTiming;
 
       if (navigationTiming) {
-        const pageLoadTime = navigationTiming.loadEventEnd - navigationTiming.fetchStart;
+        const pageLoadTime =
+          navigationTiming.loadEventEnd - navigationTiming.fetchStart;
         console.log(`[Performance] Page load time: ${pageLoadTime}ms`);
 
         // Report to analytics if needed
         if (window.gtag) {
-          window.gtag('event', 'page_load_time', {
+          window.gtag("event", "page_load_time", {
             value: pageLoadTime,
             page_path: pathname,
           });
@@ -53,7 +52,7 @@ export function PerformanceOptimizer() {
 
   useEffect(() => {
     // Implement Intersection Observer for lazy loading images
-    if ('IntersectionObserver' in window) {
+    if ("IntersectionObserver" in window) {
       const imageObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -63,20 +62,20 @@ export function PerformanceOptimizer() {
 
               if (src) {
                 img.src = src;
-                img.removeAttribute('data-src');
+                img.removeAttribute("data-src");
                 imageObserver.unobserve(img);
               }
             }
           });
         },
         {
-          rootMargin: '50px 0px',
+          rootMargin: "50px 0px",
           threshold: 0.01,
         }
       );
 
       // Observe all images with data-src attribute
-      document.querySelectorAll('img[data-src]').forEach((img) => {
+      document.querySelectorAll("img[data-src]").forEach((img) => {
         imageObserver.observe(img);
       });
 
