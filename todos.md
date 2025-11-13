@@ -42,7 +42,7 @@
 
 ### 🟡 التحقق من البناء
 - [~] تشغيل `pnpm typecheck` في Frontend والتحقق من عدم وجود أخطاء (~30 خطأ متبقي)
-- [ ] إزالة `ignoreBuildErrors` و`ignoredDuringBuilds` من `next.config.ts`
+- [x] إزالة `ignoreBuildErrors` و`ignoredDuringBuilds` من `next.config.ts`
 - [ ] تشغيل `pnpm build` في Frontend والتحقق من نجاح البناء
 
 ---
