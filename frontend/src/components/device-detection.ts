@@ -87,14 +87,43 @@ export function getMaxTextureSize(): number {
 /**
  * Detect if device is in low power mode (battery saving)
  */
-export function isLowPowerMode(): boolean {
+export async function detectLowPowerMode(): Promise<boolean> {
   if (typeof navigator === 'undefined') return false;
 
   // Check Battery API (if available)
   if ('getBattery' in navigator) {
-    // Battery API is deprecated but still useful
-    return false; // We can't reliably detect low power mode
+    try {
+      // @ts-ignore - Battery API
+      const battery = await navigator.getBattery();
+
+      // Consider low power mode if:
+      // - Battery is charging and level is low (< 20%)
+      // - Battery is not charging and level is critically low (< 15%)
+      if (!battery.charging && battery.level < 0.15) {
+        return true;
+      }
+      if (battery.level < 0.20) {
+        return true;
+      }
+    } catch (e) {
+      console.warn('Battery API not supported:', e);
+    }
   }
+
+  // Check for reduced motion preference (often enabled in low power mode)
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    return prefersReducedMotion;
+  }
+
+  return false;
+}
+
+/**
+ * Synchronous version of isLowPowerMode for immediate checks
+ */
+export function isLowPowerMode(): boolean {
+  if (typeof window === 'undefined') return false;
 
   // Check for reduced motion preference (often enabled in low power mode)
   if (window.matchMedia) {
@@ -233,8 +262,40 @@ export class PerformanceMonitor {
   private frameTimeHistory: number[] = [];
   private readonly historySize = 60; // Track last 60 frames
   private lastFrameTime = 0;
+  private currentQualityLevel: 'low' | 'medium' | 'high' = 'high';
+  private qualityAdjustmentCooldown = 0;
+  private readonly cooldownFrames = 120; // Wait 2 seconds before adjusting again
+  private isVisible = true;
+  private visibilityChangeHandler?: () => void;
+
+  constructor() {
+    this.setupVisibilityListener();
+  }
+
+  /**
+   * Setup Visibility API listener to pause/resume when tab is hidden/visible
+   */
+  private setupVisibilityListener(): void {
+    if (typeof document === 'undefined') return;
+
+    this.visibilityChangeHandler = () => {
+      this.isVisible = !document.hidden;
+
+      if (!this.isVisible) {
+        console.log('🔇 Tab hidden - pausing performance monitoring');
+      } else {
+        console.log('🔊 Tab visible - resuming performance monitoring');
+        // Reset on visibility change to avoid FPS drops from tab switching
+        this.reset();
+      }
+    };
+
+    document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+  }
 
   recordFrame(currentTime: number): void {
+    if (!this.isVisible) return; // Don't record frames when tab is hidden
+
     if (this.lastFrameTime > 0) {
       const frameTime = currentTime - this.lastFrameTime;
       this.frameTimeHistory.push(frameTime);
@@ -244,6 +305,11 @@ export class PerformanceMonitor {
       }
     }
     this.lastFrameTime = currentTime;
+
+    // Increment cooldown
+    if (this.qualityAdjustmentCooldown > 0) {
+      this.qualityAdjustmentCooldown--;
+    }
   }
 
   getAverageFPS(): number {
@@ -254,18 +320,86 @@ export class PerformanceMonitor {
   }
 
   shouldReduceQuality(targetFPS: number = 30): boolean {
+    if (this.qualityAdjustmentCooldown > 0) return false;
+
     const avgFPS = this.getAverageFPS();
-    return avgFPS < targetFPS;
+    const shouldReduce = avgFPS < targetFPS;
+
+    if (shouldReduce) {
+      this.qualityAdjustmentCooldown = this.cooldownFrames;
+    }
+
+    return shouldReduce;
   }
 
   shouldIncreaseQuality(targetFPS: number = 55): boolean {
+    if (this.qualityAdjustmentCooldown > 0) return false;
+
     const avgFPS = this.getAverageFPS();
-    return avgFPS > targetFPS && this.frameTimeHistory.length >= this.historySize;
+    const shouldIncrease = avgFPS > targetFPS && this.frameTimeHistory.length >= this.historySize;
+
+    if (shouldIncrease) {
+      this.qualityAdjustmentCooldown = this.cooldownFrames;
+    }
+
+    return shouldIncrease;
+  }
+
+  /**
+   * Get dynamic LOD config based on current performance
+   */
+  getDynamicLODConfig(baseConfig: ParticleLODConfig): ParticleLODConfig {
+    const fps = this.getAverageFPS();
+
+    // If FPS is too low, reduce quality
+    if (fps < 25) {
+      this.currentQualityLevel = 'low';
+      return {
+        particleCount: Math.floor(baseConfig.particleCount * 0.4),
+        effectRadius: Math.floor(baseConfig.effectRadius * 0.6),
+        updateFrequency: Math.max(baseConfig.updateFrequency * 2, 50),
+        enableAdvancedEffects: false,
+        enableShadows: false,
+        textureQuality: 'low',
+      };
+    }
+
+    // If FPS is moderate, use medium quality
+    if (fps < 45) {
+      this.currentQualityLevel = 'medium';
+      return {
+        particleCount: Math.floor(baseConfig.particleCount * 0.7),
+        effectRadius: Math.floor(baseConfig.effectRadius * 0.8),
+        updateFrequency: Math.ceil(baseConfig.updateFrequency * 1.5),
+        enableAdvancedEffects: false,
+        enableShadows: false,
+        textureQuality: 'medium',
+      };
+    }
+
+    // Otherwise use base config (high quality)
+    this.currentQualityLevel = 'high';
+    return baseConfig;
+  }
+
+  getQualityLevel(): 'low' | 'medium' | 'high' {
+    return this.currentQualityLevel;
+  }
+
+  isTabVisible(): boolean {
+    return this.isVisible;
   }
 
   reset(): void {
     this.frameTimeHistory = [];
     this.lastFrameTime = 0;
+    this.qualityAdjustmentCooldown = 0;
+  }
+
+  destroy(): void {
+    if (this.visibilityChangeHandler && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+    }
   }
 }
 

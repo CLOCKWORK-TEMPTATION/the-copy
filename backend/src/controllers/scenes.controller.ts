@@ -105,36 +105,28 @@ export class ScenesController {
         return;
       }
 
-      const [scene] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query to fetch scene and verify ownership
+      // Uses idx_scenes_id_project and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          scene: scenes,
+        })
         .from(scenes)
-        .where(eq(scenes.id, id));
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(scenes.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!scene) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      // Verify project belongs to user
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح للوصول لهذا المشهد',
+          error: 'المشهد غير موجود أو غير مصرح للوصول له',
         });
         return;
       }
 
       res.json({
         success: true,
-        data: scene,
+        data: result.scene,
       });
     } catch (error) {
       logger.error('Get scene error:', error);
@@ -232,30 +224,21 @@ export class ScenesController {
         return;
       }
 
-      // Check if scene exists
-      const [existingScene] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query to verify scene exists and user owns it
+      // Uses idx_scenes_id_project and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          sceneId: scenes.id,
+        })
         .from(scenes)
-        .where(eq(scenes.id, id));
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(scenes.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!existingScene) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      // Verify project belongs to user
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, existingScene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح لتعديل هذا المشهد',
+          error: 'المشهد غير موجود أو غير مصرح لتعديله',
         });
         return;
       }
@@ -312,30 +295,21 @@ export class ScenesController {
         return;
       }
 
-      // Check if scene exists
-      const [existingScene] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query to verify scene exists and user owns it
+      // Uses idx_scenes_id_project and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          sceneId: scenes.id,
+        })
         .from(scenes)
-        .where(eq(scenes.id, id));
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(scenes.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!existingScene) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      // Verify project belongs to user
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, existingScene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح لحذف هذا المشهد',
+          error: 'المشهد غير موجود أو غير مصرح لحذفه',
         });
         return;
       }

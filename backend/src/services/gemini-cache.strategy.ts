@@ -278,6 +278,69 @@ export function getAdaptiveTTL(baseAnalysisType: string, hitRate: number): numbe
   return baseTTL;
 }
 
+/**
+ * Simple wrapper for cached analysis operations
+ * Returns both data and cache status
+ *
+ * @example
+ * const result = await analyzeWithCache(
+ *   'analysis:user123',
+ *   3600,
+ *   () => performExpensiveAnalysis()
+ * );
+ * console.log('Cached:', result.cached);
+ */
+export async function analyzeWithCache<T>(
+  key: string,
+  ttl: number,
+  fetchFn: () => Promise<T>
+): Promise<{ data: T; cached: boolean }> {
+  try {
+    // Try to get from cache
+    const cached = await cacheService.get<T>(key);
+
+    if (cached) {
+      logger.debug(`✅ Cache HIT: ${key}`);
+      return {
+        data: cached,
+        cached: true,
+      };
+    }
+
+    // Cache MISS - fetch fresh data
+    logger.debug(`❌ Cache MISS: ${key}`);
+    const data = await fetchFn();
+
+    // Store in cache
+    await cacheService.set(key, data, ttl);
+
+    return {
+      data,
+      cached: false,
+    };
+  } catch (error) {
+    logger.error(`Cache operation error for ${key}, falling back to direct fetch:`, error);
+    // In case of cache error, fall back to direct fetch
+    const data = await fetchFn();
+    return { data, cached: false };
+  }
+}
+
+/**
+ * Analyze text with automatic cache key generation
+ * Convenience wrapper around analyzeWithCache
+ */
+export async function analyzeTextWithCache<T>(
+  text: string,
+  analysisType: string,
+  analyzeFn: () => Promise<T>
+): Promise<{ data: T; cached: boolean }> {
+  const cacheKey = generateGeminiCacheKey('analysis', { text, analysisType });
+  const ttl = getGeminiCacheTTL(analysisType);
+
+  return analyzeWithCache(cacheKey, ttl, analyzeFn);
+}
+
 export default {
   generateGeminiCacheKey,
   getGeminiCacheTTL,
@@ -286,4 +349,6 @@ export default {
   invalidateGeminiCache,
   getGeminiCacheStats,
   getAdaptiveTTL,
+  analyzeWithCache,
+  analyzeTextWithCache,
 };

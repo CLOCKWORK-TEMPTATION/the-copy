@@ -47,29 +47,21 @@ export class ShotsController {
         return;
       }
 
-      // Verify scene exists and belongs to user's project
-      const [scene] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query to verify scene ownership and fetch shots
+      // Uses idx_scenes_id_project and idx_projects_id_user indexes
+      const [verifyResult] = await db
+        .select({
+          sceneId: scenes.id,
+        })
         .from(scenes)
-        .where(eq(scenes.id, sceneId));
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(scenes.id, sceneId), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!scene) {
+      if (!verifyResult) {
         res.status(404).json({
           success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح للوصول لهذا المشهد',
+          error: 'المشهد غير موجود أو غير مصرح للوصول له',
         });
         return;
       }
@@ -114,49 +106,29 @@ export class ShotsController {
         return;
       }
 
-      const [shot] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query across 3 tables to fetch shot and verify ownership
+      // Uses idx_shots_id_scene, idx_scenes_id_project, and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          shot: shots,
+        })
         .from(shots)
-        .where(eq(shots.id, id));
+        .innerJoin(scenes, eq(shots.sceneId, scenes.id))
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(shots.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!shot) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'اللقطة غير موجودة',
-        });
-        return;
-      }
-
-      // Verify belongs to user's project
-      const [scene] = await db
-        .select()
-        .from(scenes)
-        .where(eq(scenes.id, shot.sceneId));
-
-      if (!scene) {
-        res.status(404).json({
-          success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح للوصول لهذه اللقطة',
+          error: 'اللقطة غير موجودة أو غير مصرح للوصول لها',
         });
         return;
       }
 
       res.json({
         success: true,
-        data: shot,
+        data: result.shot,
       });
     } catch (error) {
       logger.error('Get shot error:', error);
@@ -180,29 +152,22 @@ export class ShotsController {
 
       const validatedData = createShotSchema.parse(req.body);
 
-      // Verify scene exists and belongs to user's project
-      const [scene] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query to verify scene exists, belongs to user, and get shot count
+      // Uses idx_scenes_id_project and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          sceneId: scenes.id,
+          shotCount: scenes.shotCount,
+        })
         .from(scenes)
-        .where(eq(scenes.id, validatedData.sceneId));
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(scenes.id, validatedData.sceneId), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!scene) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح لإنشاء لقطة في هذا المشهد',
+          error: 'المشهد غير موجود أو غير مصرح لإنشاء لقطة فيه',
         });
         return;
       }
@@ -223,7 +188,7 @@ export class ShotsController {
       // Update shot count in scene
       await db
         .update(scenes)
-        .set({ shotCount: scene.shotCount + 1 })
+        .set({ shotCount: result.shotCount + 1 })
         .where(eq(scenes.id, validatedData.sceneId));
 
       res.status(201).json({
@@ -273,43 +238,22 @@ export class ShotsController {
         return;
       }
 
-      // Check if shot exists
-      const [existingShot] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query across 3 tables to verify shot exists and user owns it
+      // Uses idx_shots_id_scene, idx_scenes_id_project, and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          shotId: shots.id,
+        })
         .from(shots)
-        .where(eq(shots.id, id));
+        .innerJoin(scenes, eq(shots.sceneId, scenes.id))
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(shots.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!existingShot) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'اللقطة غير موجودة',
-        });
-        return;
-      }
-
-      // Verify belongs to user's project
-      const [scene] = await db
-        .select()
-        .from(scenes)
-        .where(eq(scenes.id, existingShot.sceneId));
-
-      if (!scene) {
-        res.status(404).json({
-          success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح لتعديل هذه اللقطة',
+          error: 'اللقطة غير موجودة أو غير مصرح لتعديلها',
         });
         return;
       }
@@ -366,43 +310,25 @@ export class ShotsController {
         return;
       }
 
-      // Check if shot exists
-      const [existingShot] = await db
-        .select()
+      // OPTIMIZED: Single JOIN query across 3 tables to verify shot exists and user owns it
+      // Also fetches scene data for updating shot count
+      // Uses idx_shots_id_scene, idx_scenes_id_project, and idx_projects_id_user indexes
+      const [result] = await db
+        .select({
+          shotId: shots.id,
+          sceneId: shots.sceneId,
+          shotCount: scenes.shotCount,
+        })
         .from(shots)
-        .where(eq(shots.id, id));
+        .innerJoin(scenes, eq(shots.sceneId, scenes.id))
+        .innerJoin(projects, eq(scenes.projectId, projects.id))
+        .where(and(eq(shots.id, id), eq(projects.userId, req.user.id)))
+        .limit(1);
 
-      if (!existingShot) {
+      if (!result) {
         res.status(404).json({
           success: false,
-          error: 'اللقطة غير موجودة',
-        });
-        return;
-      }
-
-      // Verify belongs to user's project
-      const [scene] = await db
-        .select()
-        .from(scenes)
-        .where(eq(scenes.id, existingShot.sceneId));
-
-      if (!scene) {
-        res.status(404).json({
-          success: false,
-          error: 'المشهد غير موجود',
-        });
-        return;
-      }
-
-      const [project] = await db
-        .select()
-        .from(projects)
-        .where(and(eq(projects.id, scene.projectId), eq(projects.userId, req.user.id)));
-
-      if (!project) {
-        res.status(403).json({
-          success: false,
-          error: 'غير مصرح لحذف هذه اللقطة',
+          error: 'اللقطة غير موجودة أو غير مصرح لحذفها',
         });
         return;
       }
@@ -412,8 +338,8 @@ export class ShotsController {
       // Update shot count in scene
       await db
         .update(scenes)
-        .set({ shotCount: Math.max(0, scene.shotCount - 1) })
-        .where(eq(scenes.id, existingShot.sceneId));
+        .set({ shotCount: Math.max(0, result.shotCount - 1) })
+        .where(eq(scenes.id, result.sceneId));
 
       res.json({
         success: true,
