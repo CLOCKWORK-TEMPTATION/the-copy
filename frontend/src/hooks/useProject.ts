@@ -1,7 +1,17 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import * as api from "@/lib/api";
-import type { Project, CreateProjectRequest, UpdateProjectRequest, CreateSceneRequest, CreateShotRequest } from "@/types/api";
+import type {
+  Project,
+  CreateProjectRequest,
+  UpdateProjectRequest,
+  CreateCharacterRequest,
+  UpdateCharacterRequest,
+  CreateSceneRequest,
+  UpdateSceneRequest,
+  CreateShotRequest,
+  UpdateShotRequest,
+} from "@/types/api";
 
 export function useProjects() {
   return useQuery({
@@ -48,7 +58,7 @@ export function useProjectCharacters(projectId: string | undefined) {
 
 export function useCreateCharacter() {
   return useMutation({
-    mutationFn: (data: { projectId: string; name: string; description?: string }) => 
+    mutationFn: (data: { projectId: string } & CreateCharacterRequest) =>
       api.createCharacter(data.projectId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects", variables.projectId, "characters"] });
@@ -58,7 +68,7 @@ export function useCreateCharacter() {
 
 export function useUpdateCharacter() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => api.updateCharacter(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateCharacterRequest }) => api.updateCharacter(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "characters"
@@ -130,7 +140,7 @@ export function useCreateScene() {
 
 export function useUpdateScene() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateSceneRequest> }) => api.updateScene(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateSceneRequest }) => api.updateScene(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/projects" && query.queryKey[2] === "scenes"
@@ -174,7 +184,7 @@ export function useCreateShot() {
 
 export function useUpdateShot() {
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateShotRequest> }) => api.updateShot(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateShotRequest }) => api.updateShot(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ predicate: (query) =>
         query.queryKey[0] === "/api/scenes" && query.queryKey[2] === "shots"

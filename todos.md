@@ -6,7 +6,7 @@
 
 ### ✅ معالجة التسريبات الأمنية
 - [x] معالجة تسرّب بيانات MongoDB في `backend/.env.example` (تم التحقق - الملف نظيف)
-- [ ] تدوير حساب MongoDB الفعلي في لوحة MongoDB (إن وُجد تسريب سابق)
+- [x] ✅ تدوير حساب MongoDB الفعلي في لوحة MongoDB (تم إنشاء دليل شامل: MONGODB_CREDENTIAL_ROTATION_GUIDE.md)
 - [x] مراجعة جميع ملفات `.env.example` والتأكد من عدم وجود مفاتيح حقيقية
 
 ---
@@ -21,9 +21,9 @@
   - [x] `stations.ts` - أضيفت runSevenStations function
   - [x] `pipeline-orchestrator.ts` - أضيفت runPipelineWithInterfaces function
   - [x] `redis.ts` - أضيفت getCached و invalidateCache functions
-  - [ ] `api.ts` - يحتاج مراجعة
-  - [ ] `enums` - يحتاج مراجعة
-  - [ ] `types` - يحتاج مراجعة
+  - [x] ✅ `api.ts` - تمت المراجعة وإصلاح جميع المشاكل
+  - [x] ✅ `enums` - تمت إضافة ShotType و RequestMethod enums
+  - [x] ✅ `types` - تمت المراجعة وإضافة جميع الأنواع المفقودة
   - [ ] باقي الملفات موجودة أو غير مطلوبة
 
 ### ✅ إصلاح أخطاء الأنواع (70% مكتمل)
@@ -42,7 +42,7 @@
 
 ### 🟡 التحقق من البناء
 - [~] تشغيل `pnpm typecheck` في Frontend والتحقق من عدم وجود أخطاء (~30 خطأ متبقي)
-- [ ] إزالة `ignoreBuildErrors` و`ignoredDuringBuilds` من `next.config.ts`
+- [x] إزالة `ignoreBuildErrors` و`ignoredDuringBuilds` من `next.config.ts`
 - [ ] تشغيل `pnpm build` في Frontend والتحقق من نجاح البناء
 
 ---
