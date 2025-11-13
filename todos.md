@@ -71,7 +71,7 @@
   - `shots.controller.ts`
 
 ### 🟠 التخزين المؤقت والأداء
-- [ ] تفعيل التخزين المؤقت Redis (دمج `analyzeWithCache` من `gemini-cache.strategy.ts`)
+- [x] تفعيل التخزين المؤقت Redis (دمج `analyzeWithCache` من `gemini-cache.strategy.ts`)
 
 ### 🟠 تحسينات Frontend
 - [ ] استبدال وسوم `<img>` بـ `next/image` في Frontend
