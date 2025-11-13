@@ -64,11 +64,11 @@
 
 ## المرحلة 3️⃣: تحسينات الأداء الحرجة
 
-### 🟠 قاعدة البيانات
-- [ ] تطبيق فهارس قاعدة البيانات الجديدة (تشغيل `pnpm db:generate` ثم `pnpm db:push`)
-- [ ] إعادة كتابة منطق Controllers لاستخدام استعلام JOIN واحد:
-  - `scenes.controller.ts`
-  - `shots.controller.ts`
+### ✅ قاعدة البيانات
+- [x] تطبيق فهارس قاعدة البيانات الجديدة (الفهارس موجودة في schema.ts - يجب تشغيل `pnpm db:push` لتطبيقها على قاعدة البيانات)
+- [x] إعادة كتابة منطق Controllers لاستخدام استعلام JOIN واحد:
+  - [x] `scenes.controller.ts` - تم تحسين getScene(), updateScene(), deleteScene()
+  - [x] `shots.controller.ts` - تم تحسين جميع الدوال (getShot, updateShot, deleteShot, createShot, getShots)
 
 ### 🟠 التخزين المؤقت والأداء
 - [ ] تفعيل التخزين المؤقت Redis (دمج `analyzeWithCache` من `gemini-cache.strategy.ts`)
