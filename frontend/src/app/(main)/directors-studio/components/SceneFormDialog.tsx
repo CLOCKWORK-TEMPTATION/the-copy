@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateScene, useUpdateScene } from "@/hooks/useProject";
-import type { Scene } from "@shared/schema";
+import type { Scene } from "@/types/api";
 
 interface SceneFormDialogProps {
   open: boolean;
@@ -36,7 +36,7 @@ export default function SceneFormDialog({
     location: scene?.location || "",
     timeOfDay: scene?.timeOfDay || "نهار",
     description: scene?.description || "",
-    characters: scene?.characters?.join(", ") || "",
+    characters: scene?.characters || [],
     status: scene?.status || "planned"
   });
 
@@ -48,7 +48,7 @@ export default function SceneFormDialog({
         location: scene.location,
         timeOfDay: scene.timeOfDay,
         description: scene.description || "",
-        characters: scene.characters?.join(", ") || "",
+        characters: scene.characters || [],
         status: scene.status
       });
     } else {
@@ -58,7 +58,7 @@ export default function SceneFormDialog({
         location: "",
         timeOfDay: "نهار",
         description: "",
-        characters: "",
+        characters: [],
         status: "planned"
       });
     }
@@ -77,22 +77,11 @@ export default function SceneFormDialog({
     }
 
     try {
-      const charactersArray = formData.characters
-        .split(",")
-        .map((c: string) => c.trim())
-        .filter((c: string) => c.length > 0);
-
       if (scene) {
         await updateScene.mutateAsync({
           id: scene.id,
           data: {
-            sceneNumber: formData.sceneNumber,
-            title: formData.title,
-            location: formData.location,
-            timeOfDay: formData.timeOfDay,
-            description: formData.description,
-            characters: charactersArray,
-            status: formData.status
+            ...formData
           }
         });
         
@@ -104,14 +93,8 @@ export default function SceneFormDialog({
         await createScene.mutateAsync({
           projectId,
           data: {
-            sceneNumber: formData.sceneNumber,
-            title: formData.title,
-            location: formData.location,
-            timeOfDay: formData.timeOfDay,
-            description: formData.description,
-            characters: charactersArray,
+            ...formData,
             shotCount: 0,
-            status: formData.status
           }
         });
         
@@ -129,6 +112,12 @@ export default function SceneFormDialog({
         variant: "destructive",
       });
     }
+  };
+  
+  const handleCharacterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const charactersArray = value.split(',').map(c => c.trim()).filter(c => c);
+    setFormData({ ...formData, characters: charactersArray });
   };
 
   return (
@@ -200,8 +189,8 @@ export default function SceneFormDialog({
             <Label htmlFor="characters" className="text-right block">الشخصيات (مفصولة بفاصلة)</Label>
             <Input
               id="characters"
-              value={formData.characters}
-              onChange={(e) => setFormData({ ...formData, characters: e.target.value })}
+              value={Array.isArray(formData.characters) ? formData.characters.join(', ') : ''}
+              onChange={handleCharacterInputChange}
               dir="rtl"
               placeholder="مثال: أحمد, فاطمة, محمد"
               data-testid="input-scene-characters"
@@ -212,7 +201,7 @@ export default function SceneFormDialog({
             <Label htmlFor="description" className="text-right block">الوصف</Label>
             <Textarea
               id="description"
-              value={formData.description}
+              value={formData.description ?? ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               dir="rtl"
               placeholder="وصف تفصيلي للمشهد..."

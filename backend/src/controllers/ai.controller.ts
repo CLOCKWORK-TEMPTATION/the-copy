@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { geminiService } from '@/services/gemini.service';
+import { GeminiService } from '@/services/gemini.service';
 import { logger } from '@/utils/logger';
 import { z } from 'zod';
 import type { AuthRequest } from '@/middleware/auth.middleware';
@@ -48,6 +48,7 @@ export class AIController {
         hasContext: !!context,
       });
 
+      const geminiService = new GeminiService();
       const response = await geminiService.chatWithAI(message, context);
 
       res.json({
@@ -99,6 +100,7 @@ export class AIController {
         sceneLength: sceneDescription.length,
       });
 
+      const geminiService = new GeminiService();
       const suggestion = await geminiService.getShotSuggestion(sceneDescription, shotType);
 
       res.json({

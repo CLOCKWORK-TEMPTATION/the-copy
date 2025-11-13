@@ -131,6 +131,113 @@ ${text}`;
     }
   }
 
+  async chatWithAI(message: string, context?: any): Promise<string> {
+    const startTime = Date.now();
+
+    // Generate cache key for chat
+    const cacheKey = generateGeminiCacheKey('chat', { message, context });
+
+    // Get TTL for chat
+    const ttl = getGeminiCacheTTL('chat');
+
+    const prompt = context
+      ? `أنت مساعد ذكاء اصطناعي متخصص في تحليل الأعمال الدرامية العربية. استخدم السياق التالي للإجابة على السؤال:
+
+السياق: ${JSON.stringify(context)}
+
+السؤال: ${message}`
+      : `أنت مساعد ذكاء اصطناعي متخصص في تحليل الأعمال الدرامية العربية.
+
+السؤال: ${message}`;
+
+    try {
+      const result = await cachedGeminiCall(
+        cacheKey,
+        ttl,
+        async () => {
+          // Add timeout
+          const apiResult = await Promise.race([
+            this.model.generateContent(prompt),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Gemini request timeout')), this.REQUEST_TIMEOUT)
+            ),
+          ]);
+
+          return (apiResult as any).response.text();
+        },
+        {
+          staleWhileRevalidate: true,
+          staleTTL: ttl * 2,
+        }
+      );
+
+      const duration = Date.now() - startTime;
+      trackGeminiRequest('chat', duration, true);
+
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      trackGeminiRequest('chat', duration, false);
+
+      logger.error('AI chat failed:', error);
+      throw new Error('فشل في التواصل مع الذكاء الاصطناعي');
+    }
+  }
+
+  async getShotSuggestion(sceneDescription: string, shotType: string): Promise<string> {
+    const startTime = Date.now();
+
+    // Generate cache key for shot suggestion
+    const cacheKey = generateGeminiCacheKey('shot-suggestion', { sceneDescription, shotType });
+
+    // Get TTL for shot suggestion
+    const ttl = getGeminiCacheTTL('shot-suggestion');
+
+    const prompt = `أنت خبير في إخراج الأفلام العربية. قدم اقتراحًا مفصلًا لنوع اللقطة "${shotType}" للمشهد التالي:
+
+وصف المشهد: ${sceneDescription}
+
+قدم اقتراحات تشمل:
+1. زاوية الكاميرا
+2. حركة الكاميرا
+3. التكوين البصري
+4. الإضاءة المقترحة
+5. المدة التقديرية`;
+
+    try {
+      const result = await cachedGeminiCall(
+        cacheKey,
+        ttl,
+        async () => {
+          // Add timeout
+          const apiResult = await Promise.race([
+            this.model.generateContent(prompt),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Gemini request timeout')), this.REQUEST_TIMEOUT)
+            ),
+          ]);
+
+          return (apiResult as any).response.text();
+        },
+        {
+          staleWhileRevalidate: true,
+          staleTTL: ttl * 2,
+        }
+      );
+
+      const duration = Date.now() - startTime;
+      trackGeminiRequest('shot-suggestion', duration, true);
+
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      trackGeminiRequest('shot-suggestion', duration, false);
+
+      logger.error('Shot suggestion failed:', error);
+      throw new Error('فشل في توليد اقتراحات اللقطة');
+    }
+  }
+
   private buildPrompt(text: string, analysisType: string): string {
     const prompts = {
       characters: `حلل الشخصيات في النص التالي واستخرج:
