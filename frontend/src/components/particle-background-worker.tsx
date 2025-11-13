@@ -4,54 +4,49 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ParticleWorkerManager } from "@/workers/worker-manager";
 import type { Effect } from "@/workers/types";
-
-// Particle count based on device capabilities and battery status
-const PARTICLE_CONFIG = {
-  DESKTOP: { count: 6000, batchSize: 600 },     // Reduced from 8000
-  MOBILE: { count: 2000, batchSize: 300 },      // Reduced from 3000
-  TABLET: { count: 2500, batchSize: 400 },      // Reduced from 5000
-  LOW_POWER: { count: 1000, batchSize: 200 }    // New: for low battery/weak devices
-};
+import {
+  getDeviceCapabilities,
+  getParticleLODConfig,
+  logDeviceCapabilities,
+  type ParticleLODConfig,
+} from "./device-detection";
 
 /**
- * Detect device capabilities including battery level and CPU cores
+ * Get optimal particle configuration using comprehensive LOD system
  */
-async function detectDeviceCapabilities() {
-  const width = window.innerWidth;
-
-  // Base config based on screen size
-  let baseConfig;
-  if (width <= 768) {
-    baseConfig = PARTICLE_CONFIG.MOBILE;
-  } else if (width <= 1024) {
-    baseConfig = PARTICLE_CONFIG.TABLET;
-  } else {
-    baseConfig = PARTICLE_CONFIG.DESKTOP;
-  }
-
-  // Check for low battery or weak device
-  try {
-    // Battery API check
-    if ('getBattery' in navigator) {
-      const battery = await (navigator as any).getBattery();
-      const isLowBattery = battery && !battery.charging && battery.level < 0.3;
-      if (isLowBattery) {
-        return PARTICLE_CONFIG.LOW_POWER;
+function getOptimalParticleConfig(): { count: number; batchSize: number; config: ParticleLODConfig } {
+  if (typeof window === 'undefined') {
+    return {
+      count: 3000,
+      batchSize: 400,
+      config: {
+        particleCount: 3000,
+        effectRadius: 150,
+        updateFrequency: 33,
+        enableAdvancedEffects: false,
+        enableShadows: false,
+        textureQuality: 'medium',
       }
-    }
-
-    // CPU cores check
-    const cores = navigator.hardwareConcurrency || 4;
-    const isLowEndDevice = cores <= 2;
-    if (isLowEndDevice && width <= 768) {
-      return PARTICLE_CONFIG.LOW_POWER;
-    }
-  } catch (error) {
-    // Battery API not supported or failed, use base config
-    console.debug('Device capability detection unavailable, using base config');
+    };
   }
 
-  return baseConfig;
+  // Use comprehensive device detection system
+  const capabilities = getDeviceCapabilities();
+  const lodConfig = getParticleLODConfig(capabilities);
+
+  // Calculate batch size based on particle count (20-25% of total)
+  const batchSize = Math.floor(lodConfig.particleCount * 0.22);
+
+  // Log device capabilities in development
+  if (process.env.NODE_ENV === 'development') {
+    logDeviceCapabilities();
+  }
+
+  return {
+    count: lodConfig.particleCount,
+    batchSize: batchSize,
+    config: lodConfig,
+  };
 }
 
 export default function WorkerParticleAnimation() {
@@ -169,9 +164,9 @@ export default function WorkerParticleAnimation() {
       try {
         await workerManager.initializeWorkers();
 
-        // Determine device capabilities and particle count
-        const config = await detectDeviceCapabilities();
-        const numParticles = config.count;
+        // Determine device capabilities and particle count using LOD system
+        const particleConfig = getOptimalParticleConfig();
+        const numParticles = particleConfig.count;
         const thickness = 0.15;
 
         // Sampling bounds
@@ -180,7 +175,7 @@ export default function WorkerParticleAnimation() {
         const minY = -0.4;
         const maxY = 0.85;
 
-        // Generate particles using worker
+        // Generate particles using worker with LOD-optimized batch size
         const result = await workerManager.generateParticles(
           {
             numParticles,
@@ -190,7 +185,7 @@ export default function WorkerParticleAnimation() {
             minY,
             maxY,
             maxAttempts: 3000000,
-            batchSize: config.batchSize
+            batchSize: particleConfig.batchSize
           },
           (progress, count) => {
             setGenerationProgress(progress);

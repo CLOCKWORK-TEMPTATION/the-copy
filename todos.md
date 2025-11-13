@@ -87,8 +87,8 @@
 ### 🟠 تحسينات Frontend
 - [x] استبدال وسوم `<img>` بـ `next/image` في Frontend (تم تحسين الصور بإضافة lazy loading و async decoding و fetchpriority)
 - [ ] تطبيق التحميل الكسول (Lazy Loading) للمكونات الثقيلة مثل Particles
-- [ ] تطبيق LOD على تأثيرات الجسيمات
-- [ ] تفعيل battery/perf detection للجسيمات على الأجهزة الضعيفة
+- [x] تطبيق LOD على تأثيرات الجسيمات
+- [x] تفعيل battery/perf detection للجسيمات على الأجهزة الضعيفة
 
 ---
 
