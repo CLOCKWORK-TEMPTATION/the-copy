@@ -12,8 +12,8 @@ import {
   AppSettings,
   CreativeGenre,
   WritingTechnique,
-} from '../types';
-import { GeminiService } from '../lib/gemini-service';
+} from '@/app/(main)/arabic-creative-writing-studio/types';
+import { GeminiService } from '@/app/(main)/arabic-creative-writing-studio/lib/gemini-service';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';

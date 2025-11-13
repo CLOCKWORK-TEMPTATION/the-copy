@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { CARDS_11 } from "../carousel/cards.config"
-import images from "../../config/images"
+import { CARDS_11 } from "@/components/carousel/cards.config"
+import images from "@/config/images"
 
 export function LandingCardScanner() {
   const containerRef = useRef<HTMLDivElement>(null)

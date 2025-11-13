@@ -5,9 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, Camera, Lightbulb } from "lucide-react";
-import ShotPlanningCard from "../components/ShotPlanningCard";
+import ShotPlanningCard from "@/app/(main)/directors-studio/components/ShotPlanningCard";
 import { VirtualizedGrid } from "@/components/ui/virtualized-grid";
-import type { Shot, Scene } from "../shared/schema";
+import type { Shot, Scene } from "@shared/schema";
 
 export default function ShotsPage() {
   const [selectedSceneId, setSelectedSceneId] = useState<string>("");

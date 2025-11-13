@@ -5,10 +5,10 @@
 
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { CreativeWritingStudio } from '../components/CreativeWritingStudio';
+import { CreativeWritingStudio } from '@/components/CreativeWritingStudio';
 
 // Mock dependencies
-vi.mock('../lib/gemini-service', () => ({
+vi.mock('@/app/(main)/arabic-creative-writing-studio/lib/gemini-service', () => ({
   GeminiService: class {
     async testConnection() {
       return { success: true };
@@ -19,7 +19,7 @@ vi.mock('../lib/gemini-service', () => ({
   },
 }));
 
-vi.mock('../components/PromptLibrary', () => ({
+vi.mock('@/app/(main)/arabic-creative-writing-studio/components/PromptLibrary', () => ({
   PromptLibrary: ({ onPromptSelect, loading }: any) => (
     <div data-testid="prompt-library">
       <button onClick={() => onPromptSelect({ id: 'test', title: 'Test' })} disabled={loading}>
@@ -30,7 +30,7 @@ vi.mock('../components/PromptLibrary', () => ({
   ),
 }));
 
-vi.mock('../components/WritingEditor', () => ({
+vi.mock('@/app/(main)/arabic-creative-writing-studio/components/WritingEditor', () => ({
   WritingEditor: ({ onSave }: any) => (
     <div data-testid="writing-editor">
       <button onClick={() => onSave({ id: 'test', title: 'Test Project' })}>
@@ -40,7 +40,7 @@ vi.mock('../components/WritingEditor', () => ({
   ),
 }));
 
-vi.mock('../components/SettingsPanel', () => ({
+vi.mock('@/app/(main)/arabic-creative-writing-studio/components/SettingsPanel', () => ({
   SettingsPanel: ({ onSettingsUpdate }: any) => (
     <div data-testid="settings-panel">
       <button onClick={() => onSettingsUpdate({ theme: 'dark' })}>

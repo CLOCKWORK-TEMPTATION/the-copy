@@ -5,9 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, User } from "lucide-react";
-import CharacterFormDialog from "../components/CharacterFormDialog";
+import CharacterFormDialog from "@/app/(main)/directors-studio/components/CharacterFormDialog";
 import { VirtualizedGrid } from "@/components/ui/virtualized-grid";
-import type { Character } from "../shared/schema";
+import type { Character } from "@shared/schema";
 
 export default function CharactersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

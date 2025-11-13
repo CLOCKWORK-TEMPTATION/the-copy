@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText, Upload, Download, Sparkles } from "lucide-react";
-import ScriptUploadZone from "../components/ScriptUploadZone";
-import type { Project } from "../shared/schema";
+import ScriptUploadZone from "@/app/(main)/directors-studio/components/ScriptUploadZone";
+import type { Project } from "@shared/schema";
 
 export default function ScriptPage() {
   const [currentProjectId, setCurrentProjectId] = useState<string>("");

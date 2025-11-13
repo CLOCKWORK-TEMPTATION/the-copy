@@ -4,7 +4,7 @@
 "use client";
 
 import React, { useState, useCallback } from 'react';
-import { AppSettings, GeminiSettings } from '../types';
+import { AppSettings, GeminiSettings } from '@/app/(main)/arabic-creative-writing-studio/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';

@@ -5,9 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import SceneFormDialog from "../components/SceneFormDialog";
+import SceneFormDialog from "@/app/(main)/directors-studio/components/SceneFormDialog";
 import { VirtualizedGrid } from "@/components/ui/virtualized-grid";
-import type { Scene } from "../shared/schema";
+import type { Scene } from "@shared/schema";
 
 export default function ScenesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
