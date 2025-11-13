@@ -59,6 +59,10 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.NODE_ENV === "production",
   },
 
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Performance optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",

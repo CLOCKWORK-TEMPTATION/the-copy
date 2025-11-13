@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { authService } from '../services/auth.service';
-import { logger } from '../utils/logger';
+import { authService } from '@/services/auth.service';
+import { logger } from '@/utils/logger';
 import { z } from 'zod';
-import type { AuthRequest } from '../middleware/auth.middleware';
+import type { AuthRequest } from '@/middleware/auth.middleware';
 
 const signupSchema = z.object({
   email: z.string().email('البريد الإلكتروني غير صالح'),

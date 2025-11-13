@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { db } from '../db';
-import { shots, scenes, projects } from '../db/schema';
+import { db } from '@/db';
+import { shots, scenes, projects } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 import { z } from 'zod';
-import type { AuthRequest } from '../middleware/auth.middleware';
+import type { AuthRequest } from '@/middleware/auth.middleware';
 
 const createShotSchema = z.object({
   sceneId: z.string().min(1, 'معرف المشهد مطلوب'),

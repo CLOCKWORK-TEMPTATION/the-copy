@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import SceneFormDialog from "../components/SceneFormDialog";
 import { VirtualizedGrid } from "@/components/ui/virtualized-grid";
-import type { Scene } from "../shared/schema";
+import type { Scene } from "./shared/schema";
 
 export default function ScenesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
