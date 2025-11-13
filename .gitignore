@@ -904,3 +904,35 @@
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# ==============================================================================
+# CURSOR IDE GLOBAL STORAGE
+# ==============================================================================
+# Cursor IDE global storage directories and files
+# These paths contain user-specific settings and should not be committed
+
+# Cursor globalStorage directories
+**/AppData/Roaming/Cursor/User/globalStorage/rooveterinaryinc.roo-cline/
+**/AppData/Roaming/Cursor/User/globalStorage/saoudrizwan.claude-dev/
+**/AppData/Roaming/Cursor/User/globalStorage/anysphere.cursor-retrieval/
+**/AppData/Roaming/Cursor/User/globalStorage/kilocode.kilo-code/
+**/AppData/Roaming/Cursor/User/globalStorage/ms-vscode.powershell/
+
+# Cursor globalStorage database files
+**/AppData/Roaming/Cursor/User/globalStorage/state.vscdb
+**/AppData/Roaming/Cursor/User/globalStorage/state.vscdb.backup
+
+# Cursor globalStorage JSON files
+**/AppData/Roaming/Cursor/User/globalStorage/storage.json
+**/AppData/Roaming/Cursor/User/globalStorage/storage.json.backup
+
+# Alternative patterns (for different path formats)
+**/globalStorage/rooveterinaryinc.roo-cline/
+**/globalStorage/saoudrizwan.claude-dev/
+**/globalStorage/anysphere.cursor-retrieval/
+**/globalStorage/kilocode.kilo-code/
+**/globalStorage/ms-vscode.powershell/
+**/globalStorage/state.vscdb
+**/globalStorage/state.vscdb.backup
+**/globalStorage/storage.json
+**/globalStorage/storage.json.backup
