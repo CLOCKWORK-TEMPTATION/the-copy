@@ -97,8 +97,8 @@ export default function CharacterFormDialog({
           })
       : () =>
           createCharacter.mutateAsync({
-            projectId,
             ...(payload as CreateCharacterRequest),
+            projectId,
           });
 
     try {

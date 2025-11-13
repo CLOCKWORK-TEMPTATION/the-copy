@@ -418,14 +418,16 @@ export default function SystemMetricsDashboard() {
                 <span className="text-sm font-medium">المعالج (CPU)</span>
                 <Badge
                   variant={
-                    dashboardData?.resources.cpu.usage > 80
+                    dashboardData?.resources?.cpu?.usage &&
+                    dashboardData.resources.cpu.usage > 80
                       ? "destructive"
-                      : dashboardData?.resources.cpu.usage > 60
+                      : dashboardData?.resources?.cpu?.usage &&
+                          dashboardData.resources.cpu.usage > 60
                         ? "default"
                         : "secondary"
                   }
                 >
-                  {dashboardData
+                  {dashboardData?.resources?.cpu?.usage
                     ? `${dashboardData.resources.cpu.usage.toFixed(1)}%`
                     : "-"}
                 </Badge>
@@ -442,14 +444,16 @@ export default function SystemMetricsDashboard() {
                 <span className="text-sm font-medium">الذاكرة (Memory)</span>
                 <Badge
                   variant={
-                    dashboardData?.resources.memory.percent > 80
+                    dashboardData?.resources?.memory?.percent &&
+                    dashboardData.resources.memory.percent > 80
                       ? "destructive"
-                      : dashboardData?.resources.memory.percent > 60
+                      : dashboardData?.resources?.memory?.percent &&
+                          dashboardData.resources.memory.percent > 60
                         ? "default"
                         : "secondary"
                   }
                 >
-                  {dashboardData
+                  {dashboardData?.resources?.memory?.percent
                     ? `${dashboardData.resources.memory.percent.toFixed(1)}%`
                     : "-"}
                 </Badge>

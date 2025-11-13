@@ -25,10 +25,12 @@ import { useGetShotSuggestion } from "@/hooks/useAI";
 import type { Shot } from "@shared/schema";
 
 interface ShotPlanningCardProps {
-  shot?: Shot;
+  shot?: Partial<Shot>;
   shotNumber: number;
   sceneNumber: number;
   sceneDescription?: string;
+  projectId?: string;
+  sceneId?: string;
   onSave?: (shotData: Partial<Shot>) => void;
   onDelete?: () => void;
 }
@@ -38,6 +40,8 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
   shotNumber,
   sceneNumber,
   sceneDescription = "",
+  projectId = "",
+  sceneId = "",
   onSave,
   onDelete,
 }: ShotPlanningCardProps) {
@@ -73,11 +77,15 @@ const ShotPlanningCard = memo(function ShotPlanningCard({
   }, [shot]);
 
   const handleGetSuggestion = async () => {
+    if (!projectId || !sceneId) {
+      console.error("Missing projectId or sceneId for getting suggestions");
+      return;
+    }
     try {
       const result = await getSuggestionMutation.mutateAsync({
-        sceneDescription: sceneDescription || "مشهد عام",
+        projectId,
+        sceneId,
         shotType,
-        cameraAngle,
       });
       if ("data" in result && result.data) {
         setAiSuggestion(result.data);

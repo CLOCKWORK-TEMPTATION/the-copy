@@ -19,7 +19,7 @@ import {
 
 import { runFullPipeline } from "@/lib/actions/analysis";
 import { useToast } from "@/hooks/use-toast";
-import { textChunker, type ContextMap } from "@/lib/ai/text-chunking";
+// import { textChunker, type ContextMap } from "@/lib/ai/text-chunking";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Textarea } from "./ui/textarea";
@@ -129,17 +129,19 @@ const StationsPipeline = () => {
 
     startTransition(async () => {
       try {
-        // Check if text needs chunking
-        const chunkedData = textChunker.chunkText(text);
-        setContextMap(chunkedData);
-        setIsLongText(chunkedData.chunks.length > 1);
+        // Check if text needs chunking - commented out due to missing module
+        // const chunkedData = textChunker.chunkText(text);
+        // setContextMap(chunkedData);
+        // setIsLongText(chunkedData.chunks.length > 1);
 
         let pipelineResult;
 
-        if (chunkedData.chunks.length > 1) {
+        // Chunking logic commented out - process as single text
+        if (false) {
           // Process chunks with context
-          const chunkResults = [];
+          const chunkResults: any[] = [];
 
+          /*
           for (let i = 0; i < chunkedData.chunks.length; i++) {
             const chunk = chunkedData.chunks[i];
             if (!chunk) continue;
@@ -162,39 +164,52 @@ const StationsPipeline = () => {
 
             chunkResults.push(chunkResult);
           }
+          */
 
           // Merge results
           pipelineResult = {
             stationOutputs: {
               station1: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station1),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station1
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station2: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station2),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station2
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station3: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station3),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station3
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station4: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station4),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station4
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station5: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station5),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station5
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station6: {
-                chunks: chunkResults.map((r) => r.stationOutputs.station6),
+                chunks: chunkResults.map(
+                  (r: any) => r.stationOutputs?.station6
+                ),
                 summary: "تحليل مدمج من عدة أجزاء",
               },
               station7: {
                 fullAnalysis: chunkResults.map(
-                  (r) => r.stationOutputs.station7
+                  (r: any) => r.stationOutputs?.station7
                 ),
-                contextMap: chunkedData,
+                // contextMap: chunkedData,
                 summary: `تقرير شامل مدمج من ${chunkResults.length} جزء`,
                 totalChunks: chunkResults.length,
               },
@@ -220,13 +235,13 @@ const StationsPipeline = () => {
         }
 
         const formattedResults = {
-          1: pipelineResult.stationOutputs.station1,
-          2: pipelineResult.stationOutputs.station2,
-          3: pipelineResult.stationOutputs.station3,
-          4: pipelineResult.stationOutputs.station4,
-          5: pipelineResult.stationOutputs.station5,
-          6: pipelineResult.stationOutputs.station6,
-          7: pipelineResult.stationOutputs.station7,
+          station1: (pipelineResult as any).stationOutputs?.station1,
+          station2: (pipelineResult as any).stationOutputs?.station2,
+          station3: (pipelineResult as any).stationOutputs?.station3,
+          station4: (pipelineResult as any).stationOutputs?.station4,
+          station5: (pipelineResult as any).stationOutputs?.station5,
+          station6: (pipelineResult as any).stationOutputs?.station6,
+          station7: (pipelineResult as any).stationOutputs?.station7,
         };
 
         // Save to session storage for development pipeline

@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, User } from "lucide-react";
 import CharacterFormDialog from "@/app/(main)/directors-studio/components/CharacterFormDialog";
@@ -11,7 +17,9 @@ import type { Character } from "@shared/schema";
 
 export default function CharactersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(
+    null
+  );
   const queryClient = useQueryClient();
 
   // Get current project ID from URL or state
@@ -122,15 +130,15 @@ export default function CharactersPage() {
                         character.consistencyStatus === "good"
                           ? "bg-green-100 text-green-800"
                           : character.consistencyStatus === "warning"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
                       }`}
                     >
                       {character.consistencyStatus === "good"
                         ? "جيد"
                         : character.consistencyStatus === "warning"
-                        ? "تحذير"
-                        : "ضعيف"}
+                          ? "تحذير"
+                          : "ضعيف"}
                     </span>
                   </div>
                   {character.lastSeen && (
@@ -142,7 +150,9 @@ export default function CharactersPage() {
                   {character.notes && (
                     <div className="pt-2">
                       <span className="font-semibold">ملاحظات:</span>
-                      <p className="text-muted-foreground mt-1">{character.notes}</p>
+                      <p className="text-muted-foreground mt-1">
+                        {character.notes}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -197,15 +207,15 @@ export default function CharactersPage() {
                         character.consistencyStatus === "good"
                           ? "bg-green-100 text-green-800"
                           : character.consistencyStatus === "warning"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
                       }`}
                     >
                       {character.consistencyStatus === "good"
                         ? "جيد"
                         : character.consistencyStatus === "warning"
-                        ? "تحذير"
-                        : "ضعيف"}
+                          ? "تحذير"
+                          : "ضعيف"}
                     </span>
                   </div>
                   {character.lastSeen && (
@@ -217,7 +227,9 @@ export default function CharactersPage() {
                   {character.notes && (
                     <div className="pt-2">
                       <span className="font-semibold">ملاحظات:</span>
-                      <p className="text-muted-foreground mt-1">{character.notes}</p>
+                      <p className="text-muted-foreground mt-1">
+                        {character.notes}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -240,7 +252,7 @@ export default function CharactersPage() {
       <CharacterFormDialog
         open={isDialogOpen}
         onOpenChange={handleDialogClose}
-        {...(selectedCharacter && { character: selectedCharacter })}
+        character={selectedCharacter || undefined}
         projectId={currentProjectId}
       />
     </div>

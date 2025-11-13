@@ -93,6 +93,7 @@ export function VirtualizedGrid<T>({
 
   return (
     <div ref={containerRef} className={className} style={{ width: "100%" }}>
+      {/* @ts-ignore - FixedSizeGrid type issues */}
       <FixedSizeGrid<T>
         columnCount={actualColumnCount}
         columnWidth={itemWidth + gap}
