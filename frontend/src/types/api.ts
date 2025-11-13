@@ -1,28 +1,11 @@
-// Enums
-export enum ShotType {
-  WIDE = 'wide',
-  MEDIUM = 'medium',
-  CLOSE_UP = 'close-up',
-  EXTREME_CLOSE_UP = 'extreme-close-up',
-}
-
-export enum RequestMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH',
-}
-
-// API Response Types
 export interface ApiResponse<T = any> {
   success: boolean;
-  data: T;
   message?: string;
+  data?: T;
   error?: string;
 }
 
-// Project Types
+/* Project Types */
 export interface Project {
   id: string;
   title: string;
@@ -32,6 +15,7 @@ export interface Project {
   updatedAt: string;
 }
 
+/* Requests */
 export interface CreateProjectRequest {
   title: string;
   scriptContent?: string;
@@ -42,7 +26,7 @@ export interface UpdateProjectRequest {
   scriptContent?: string;
 }
 
-// Scene Types
+/* Scene Types */
 export interface Scene {
   id: string;
   projectId: string;
@@ -79,7 +63,7 @@ export interface UpdateSceneRequest {
   status?: string;
 }
 
-// Shot Types
+/* Shot Types */
 export interface Shot {
   id: string;
   sceneId: string;
@@ -110,7 +94,7 @@ export interface UpdateShotRequest {
   aiSuggestion?: string;
 }
 
-// Character Types
+/* Character Types */
 export interface Character {
   id: string;
   projectId: string;
@@ -138,19 +122,14 @@ export interface UpdateCharacterRequest {
   notes?: string;
 }
 
-// AI Analysis Types
+/* AI Analysis Types */
 export interface ScriptAnalysis {
-  themes: string[];
   characters: string[];
   locations: string[];
-  emotionalArc: string;
-  technicalComments: string;
   visualSuggestions: string[];
 }
 
-// Generic API Error
+/* Generic API Error */
 export interface ApiError {
   message: string;
-  statusCode?: number;
-  details?: any;
 }
