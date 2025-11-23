@@ -2,7 +2,7 @@
 # see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "stable-24.11"; # or "unstable"
+  channel = "unstable"; # Use unstable channel to get latest .NET 10 stable release
   # Use https://search.nixos.org/packages to find packages
   packages = [ pkgs.dotnet-sdk_10 pkgs.nodejs_20 ];
   # Sets environment variables in the workspace
