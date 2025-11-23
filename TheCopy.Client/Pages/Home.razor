@@ -1,7 +1,21 @@
+
 @page "/"
+@using TheCopy.Client.Components.UI
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to TheCopy.NET</h1>
+<ParticleBackground />
 
-<p>This is your new Blazor WebAssembly application migrated from Next.js.</p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center text-white">
+            <h1 class="display-4">Welcome to TheCopy.NET</h1>
+            <p class="lead">This is your new Blazor WebAssembly application migrated from Next.js.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <CardScanner />
+        </div>
+    </div>
+</div>

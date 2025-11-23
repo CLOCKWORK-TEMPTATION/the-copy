@@ -1,0 +1,14 @@
+
+@inject IJSRuntime JSRuntime
+
+<div id="three-canvas-container" style="position: fixed; top: 0; left: 0; z-index: -1;"></div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("startParticleBackground", "three-canvas-container");
+        }
+    }
+}
