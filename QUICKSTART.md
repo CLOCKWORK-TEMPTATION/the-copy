@@ -17,14 +17,14 @@ Open `TheCopy.Server/appsettings.json` and replace the placeholders:
 }
 ```
 
-## Step 2: Verify .NET 9 Installation
+## Step 2: Verify .NET 10 Installation
 
 ```bash
 dotnet --version
-# Should output: 9.0.x
+# Should output: 10.0.x
 ```
 
-If not installed, download from: https://dotnet.microsoft.com/download/dotnet/9.0
+If not installed, download from: https://dotnet.microsoft.com/download/dotnet/10.0
 
 ## Step 3: Restore NuGet Packages
 
@@ -73,4 +73,6 @@ Edit `Properties/launchSettings.json` and change the ports.
 
 ---
 
-**You're ready to start migrating your MERN app to .NET 9!** 🎉
+**You're ready to start migrating your MERN app to .NET 10 LTS!** 🎉
+
+**Note:** .NET 10 has **Long Term Support (LTS) until 2028** - perfect for production applications!

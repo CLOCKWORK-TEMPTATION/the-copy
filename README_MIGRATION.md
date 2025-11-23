@@ -1,8 +1,10 @@
-# TheCopy - MERN to .NET 9 Migration
+# TheCopy - MERN to .NET 10 Migration
 
 ## 📋 Project Overview
 
-This is a **Clean Architecture** .NET 9 solution created to migrate a full-stack MERN application (Next.js + Express) to a modern, scalable .NET ecosystem ready for microservices architecture.
+This is a **Clean Architecture** .NET 10 LTS solution created to migrate a full-stack MERN application (Next.js + Express) to a modern, scalable .NET ecosystem ready for microservices architecture.
+
+**🎯 .NET 10 LTS - Long Term Support until 2028**
 
 ---
 
@@ -49,18 +51,18 @@ TheCopy/
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `Npgsql.EntityFrameworkCore.PostgreSQL` | 9.0.0 | PostgreSQL ORM (for Neon DB) |
-| `MongoDB.Driver` | 2.29.0 | MongoDB client |
+| `Npgsql.EntityFrameworkCore.PostgreSQL` | 10.0.0 | PostgreSQL ORM (for Neon DB) |
+| `MongoDB.Driver` | 3.0.0 | MongoDB client |
 | `StackExchange.Redis` | 2.8.16 | Redis caching & pub/sub |
-| `Microsoft.EntityFrameworkCore.Design` | 9.0.0 | EF Core migrations & tooling |
-| `Swashbuckle.AspNetCore` | 6.8.1 | OpenAPI/Swagger documentation |
+| `Microsoft.EntityFrameworkCore.Design` | 10.0.0 | EF Core migrations & tooling |
+| `Swashbuckle.AspNetCore` | 7.0.0 | OpenAPI/Swagger documentation |
 
 ### TheCopy.Client (Frontend)
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `Microsoft.AspNetCore.Components.WebAssembly` | 9.0.0 | Blazor WebAssembly runtime |
-| `Microsoft.AspNetCore.Components.WebAssembly.DevServer` | 9.0.0 | Development server |
+| `Microsoft.AspNetCore.Components.WebAssembly` | 10.0.0 | Blazor WebAssembly runtime |
+| `Microsoft.AspNetCore.Components.WebAssembly.DevServer` | 10.0.0 | Development server |
 
 ---
 
@@ -88,7 +90,7 @@ TheCopy/
 ## 🚀 How to Run
 
 ### Prerequisites
-- .NET 9 SDK installed ([Download](https://dotnet.microsoft.com/download/dotnet/9.0))
+- .NET 10 SDK installed ([Download](https://dotnet.microsoft.com/download/dotnet/10.0))
 - PostgreSQL/Neon DB instance
 - MongoDB instance
 - Redis instance (optional for development)
