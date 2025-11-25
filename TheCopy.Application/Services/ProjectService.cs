@@ -1,14 +1,15 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheCopy.Application.Interfaces;
 using TheCopy.Domain.Entities;
-using TheCopy.Shared.DataTransferObjects;
+using TheCopy.Shared.DTOs;
 
 namespace TheCopy.Application.Services;
 
-public class ProjectService
+public class ProjectService : IProjectService
 {
     private readonly IProjectRepository _projectRepository;
 
@@ -17,12 +18,12 @@ public class ProjectService
         _projectRepository = projectRepository;
     }
 
-    public async Task<ProjectDto> CreateProject(CreateProjectRequestDto model)
+    public async Task<ProjectDto> CreateProjectAsync(CreateProjectDto request, Guid userId)
     {
         var project = new Project
         {
-            Name = model.Name,
-            UserId = model.UserId
+            Name = request.Name,
+            UserId = userId
         };
 
         await _projectRepository.AddAsync(project);
@@ -35,7 +36,7 @@ public class ProjectService
         };
     }
 
-    public async Task<IEnumerable<ProjectDto>> GetProjectsByUser(Guid userId)
+    public async Task<List<ProjectDto>> GetAllProjectsAsync(Guid userId)
     {
         var projects = await _projectRepository.GetByUserIdAsync(userId);
         return projects.Select(p => new ProjectDto
@@ -43,6 +44,6 @@ public class ProjectService
             Id = p.Id,
             Name = p.Name,
             UserId = p.UserId
-        });
+        }).ToList();
     }
 }
